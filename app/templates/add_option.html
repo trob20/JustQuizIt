@@ -11,7 +11,7 @@
 
         <div class="d-flex">
             <p class="nav-item">Welcome {{ first_name }}!</p>
-            <form action="/quiz/dashboard" method="GET">
+            <form action="/dashboard" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
             </form>
@@ -35,7 +35,7 @@
 
 
 <div id='forms'>
-    <form action="/courses/create" method="POST">
+    <form action="/question/create_option/{{ question.id }}" method="POST">
     {% csrf_token %}
 
         <div class="mb-3 row">
@@ -52,10 +52,11 @@
                     {% endfor %}
                 </select>
         </div>
+        <button class="btn btn-success" id="add" type="submit">Add more!</button>
     </form>
 </div>
 
-<button class="btn btn-success" id="add" type="submit">Add more!</button>
+
 
 <script>
     let forms = document.getElementById('forms')

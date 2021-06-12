@@ -48,7 +48,7 @@ def login(request):
 
         if bcrypt.checkpw(password_input.encode(), logged_in_user.password.encode()):
             request.session["u_id"] = logged_in_user.id
-            return redirect("/quiz/dashboard")
+            return redirect("/dashboard")
         else:
             messages.error(request, "Invalid credentials")
             return redirect ("/")
@@ -109,7 +109,7 @@ def dashboard(request):
 # Display New - Question, Answer Options
 #==========================================================
 
-def add_question(request):
+def display_question(request):
     if(request.method=="GET"): 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
@@ -136,7 +136,7 @@ def create_question(request):
         # if len(errors) > 0:
         #     for key, value in errors.items():
         #         messages.error(request, value)
-        #     return redirect('/quiz/add_question')
+        #     return redirect('/question/display_question')
 
         user = User.objects.get(id=request.session["u_id"])
 
@@ -150,7 +150,7 @@ def create_question(request):
             question_created_by=user
         )
         questionId = Question.objects.last().id
-        return redirect ('/quiz/add_option/'+ str(questionId))
+        return redirect ('/question/display_option/'+ str(questionId))
     return redirect ('/')
 
 
@@ -162,7 +162,7 @@ def create_question(request):
 #==========================================================
 
 
-def add_option(request, id):
+def display_option(request, id):
     if(request.method=="GET"): 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
@@ -189,7 +189,7 @@ def create_option(request, id):
         # if len(errors) > 0:
         #     for key, value in errors.items():
         #         messages.error(request, value)
-        #     return redirect('/option/new')
+        #     return redirect('/question/display_option/'+ str(id)')
 
         user = User.objects.get(id=id)
 
@@ -211,27 +211,27 @@ def create_option(request, id):
 # Display Edit - Question, Answer Options
 #==========================================================
 
-def edit_question(request, question_id):
+def edit_question(request, id):
     if(request.method=="GET"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
 
         context= {
-            "question": Question.objects.get(id=question_id),
+            "question": Question.objects.get(id=id),
         }
         return render(request, "edit_question.html", context)
     return redirect ('/')
 
 
-def edit_option(request, option_id):
+def edit_option(request, id):
     if(request.method=="GET"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
 
         context= {
-            "option": AnswerOption.objects.get(id=option_id),
+            "option": AnswerOption.objects.get(id=id),
         }
         return render(request, "edit_option.html", context)
     return redirect ('/')
@@ -243,7 +243,7 @@ def edit_option(request, option_id):
 #==========================================================
 
 
-def update_question(request, question_id):
+def update_question(request, id):
     if(request.method=="POST"):
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
@@ -253,7 +253,7 @@ def update_question(request, question_id):
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect ('/question/edit/'+ str(question_id))
+            return redirect ('/question/edit/'+ str(id))
 
         question = Question.objects.get(id=question_id)
         question.source=request.POST['source']
@@ -265,11 +265,11 @@ def update_question(request, question_id):
         question.question_created_by.id['user_id']
         question.save()
 
-        return redirect ('/question/edit/'+ str(question_id))
+        return redirect ('/question/edit/'+ str(id))
     return redirect ('/')
 
 
-def update_option(request, option_id):
+def update_option(request, id):
     if(request.method=="POST"):
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
@@ -279,14 +279,14 @@ def update_option(request, option_id):
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect ('/option/edit/'+ str(option_id))
+            return redirect ('/option/edit/'+ str(id))
 
-        option = AnswerOption.objects.get(id=option_id)
+        option = AnswerOption.objects.get(id=id)
         option.answer_option=request.POST['answer_option']
         option.answer=request.POST['answer']
         option.save()
 
-        return redirect ('/option/edit/'+ str(option_id))
+        return redirect ('/option/edit/'+ str(id))
     return redirect ('/')
 
 
@@ -295,24 +295,24 @@ def update_option(request, option_id):
 # Delete - Question, Answer Options
 #==========================================================
 
-def delete_question(request, question_id):
+def delete_question(request, id):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
 
-        question = Question.objects.get(id=question_id)
+        question = Question.objects.get(id=id)
         question.delete()
-        return redirect ('/quiz/dashboard')
+        return redirect ('/dashboard')
     return redirect ('/')
 
-def delete_option(request, option_id):
+def delete_option(request, id):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
 
-        option = AnswerOption.objects.get(id=option_id)
+        option = AnswerOption.objects.get(id=id)
         option.delete()
-        return redirect ('/quiz/dashboard')
+        return redirect ('/dashboard')
     return redirect ('/')

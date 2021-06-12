@@ -9,19 +9,19 @@ urlpatterns = [
 
     path('dashboard', views.dashboard),
 
-    path('quiz/add_question', views.add_question),
-    path('quiz/add_option/<int:id>', views.add_option),
+    path('question/display_question', views.display_question),
+    path('question/display_option/<int:id>', views.display_option),
 
-    path('quiz/create_question', views.create_question),
-    path('quiz/create_option/<int:id>', views.create_option),
+    path('question/create_question', views.create_question),
+    path('question/create_option/<int:id>', views.create_option),
 
-    path('quiz/edit_question/<int:id>', views.edit_question),
-    path('quiz/edit_option/<int:id>', views.edit_option),    
+    path('question/edit_question/<int:id>', views.edit_question),
+    path('question/edit_option/<int:id>', views.edit_option),    
 
-    path('quiz/update_question/<int:id>', views.update_question),
-    path('quiz/update_option/<int:id>', views.update_option),  
+    path('question/update_question/<int:id>', views.update_question),
+    path('question/update_option/<int:id>', views.update_option),  
 
-    path('quiz/delete_question/<int:id>', views.delete_question),
-    path('quiz/delete_option/<int:id>', views.delete_option),  
+    path('question/delete_question/<int:id>', views.delete_question),
+    path('question/delete_option/<int:id>', views.delete_option),  
 
 ]
