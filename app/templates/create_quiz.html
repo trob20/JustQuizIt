@@ -27,6 +27,25 @@
 
 <h1 class="header">Create Quiz</h1>
 
+    <form action="/quiz/create_quiz" method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Quiz Name</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="quiz_name"/>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Technology</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="technology"/>
+            </div>
+        </div>
+
+    </form>
+
 <h3 class="spacer_top">Quiz Questions</h3>
 <table class="table table-striped">
     <thead>
