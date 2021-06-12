@@ -55,17 +55,8 @@ class QuizManager(models.Manager):
         elif len(postData["name"]) < 3:
             errors["name"] = "Quiz name must have at least 3 characters!"
 
-        if len(postData["technology"]) is None:
-            errors["technology"] = "A technology must be provided!"
-        elif len(postData["technology"]) < 3:
-            errors["technology"] = "A technology must have at least 3 characters!"
-
-
 class Quiz(models.Model):
-    source = models.CharField(max_length=10)
-    source_name = models.CharField(max_length=25)
     name = models.CharField(max_length=50)
-    technology = models.CharField(max_length=25)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, related_name = "quizzes_created", on_delete=models.CASCADE)
@@ -95,11 +86,11 @@ class Question(models.Model):
     technology = models.CharField(max_length=25)
     domain = models.CharField(max_length=50)
     question_type = models.CharField(max_length=20)
-    qustion_text = models.CharField(max_length=255)
+    question_text = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     question_created_by = models.ForeignKey(User, related_name = "questions_created", on_delete=models.CASCADE)
-    related_quiz = models.ManyToManyField(Quiz, related_name = "questions")
+    related_quiz = models.ManyToManyField(Quiz, related_name = "questions", null=True)
     objects = QuestionManager()
 
     # answer_options - one-to-many
@@ -119,39 +110,41 @@ class AnswerOption(models.Model):
 
 
 class QuizTaken(models.Model):
-    quiz_type = models.CharField(max_length=10)
-    source = models.CharField(max_length=25)
     name = models.CharField(max_length=50)
-    technology = models.CharField(max_length=25)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, related_name = "quizzes_created", on_delete=models.CASCADE)
 
     # questions - many-to-many
     # quiz_taken - one-to-many
 
 
 class QuestionTaken(models.Model):
-    question = models.CharField(max_length=255)
+    source = models.CharField(max_length=10)
+    source_name = models.CharField(max_length=25)
+    technology = models.CharField(max_length=25)
     domain = models.CharField(max_length=50)
-    related_quiz = models.ManyToManyField(QuizTaken, related_name = "questions")
+    question_type = models.CharField(max_length=20)
+    question_text = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    question_created_by = models.ForeignKey(User, related_name = "questions_created", on_delete=models.CASCADE)
+    related_quiz = models.ManyToManyField(Quiz, related_name = "questions", null=True)
     # answer_options - one-to-many
 
 
 class AnswerOptionTaken(models.Model):
     answer_option = models.CharField(max_length=255)
-    correct = models.CharField(max_length=10)
-    related_question = models.ForeignKey(QuestionTaken, related_name = "answer_options", on_delete=models.CASCADE)
+    answer = models.CharField(max_length=10, default="Incorrect")
+    related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # answer_selected - one-to-one
 
 
-class Answer(models.Model):
-    answer = models.ForeignKey(AnswerOptionTaken, related_name="answer_selected", on_delete=models.CASCADE)
+class AnswerSelected(models.Model):
+    answer_selected = models.ForeignKey(AnswerOptionTaken, related_name="answer_selected", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -183,7 +176,7 @@ class Domain(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class CorrectOptions(models.Model):
+class Correct(models.Model):
     name = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

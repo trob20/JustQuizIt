@@ -9,7 +9,6 @@
     <div class="container-fluid">
         <p class="navbar-brand">JustQuizIt</p>
 
-
         <div class="d-flex">
             <p class="nav-item">Welcome {{ first_name }}!</p>
             <form action="/quiz/dashboard" method="GET">
@@ -29,21 +28,12 @@
 
     <form action="/quiz/create_quiz" method="POST">
         {% csrf_token %}
-
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Quiz Name</label>
             <div class="col-sm-6">
                 <input class="form-control" type="text" name="quiz_name"/>
             </div>
         </div>
-
-        <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label">Technology</label>
-            <div class="col-sm-6">
-                <input class="form-control" type="text" name="technology"/>
-            </div>
-        </div>
-
     </form>
 
 <h3>Quiz Questions</h3>
@@ -92,15 +82,15 @@
                     <td>{{ question.text}}</td>
                     <td>
                         <div class='row'>
-                            <a class="linkUnderline a_spacer1" href="/questions/select/{{ question.id }}">Add</a>
-                            
-                            <p class='a_spacer2'>|</p>
+                            <a class="linkUnderline action_spacer1" href="/questions/select/{{ question.id }}">Add</a>
+
+                            <p class='action_spacer2'>|</p>
                             <form action="/questions/edit/{{ question.id }}" method="GET">
                                 {% csrf_token %}
                                 <button class="linkUnderline btnAsLink">Edit</button>
                             </form>
 
-                            <p class='a_spacer2'>|</p>
+                            <p class='action_spacer2'>|</p>
                             <form action="/questions/delete/{{ question.id }}" method="POST">
                                 {% csrf_token %}
                                 <button class="linkUnderline btnAsLink">Delete</button>

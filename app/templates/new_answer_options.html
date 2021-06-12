@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Answer Options{% endblock %}
+
+{% block content %}
+
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <p class="navbar-brand">JustQuizIt</p>
+
+        <div class="d-flex">
+            <p class="nav-item">Welcome {{ first_name }}!</p>
+            <form action="/quiz/dashboard" method="GET">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
+            </form>
+
+            <form action="/logout" method="POST">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<h1 class="header">Add Answer Options</h1>
+
+    <form action="/courses/create" method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Question</label>
+            <div class="col-sm-6">
+                <p class="form-control" type="text" name="name">{{ question.question_text }} </p>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Number of Options</label>
+            <div class="col-sm-6">
+                <select name="num_options">
+                    <option disabled selected value="none"></option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <input type='hidden' name="question.id" value="{{question.id}}" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Option</label>
+            <div class="col-sm-6">
+                <input class="form-control" type="text" name="option"/>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Answer</label>
+            <div class="col-sm-6">
+                <select name="corect">
+                    {% for corect in correct %}
+                        <option disabled selected value="none"></option>
+                        <option value="{{ corect.name }}">{{ corect.name }}</option>  
+                    {% endfor %}
+                </select>
+                <input type='hidden' name="corect.id" value="{{corect.id}}" />
+            </div>
+        </div>
+
+        <div class="col-sm-8">
+            <button class="btn btn-success float-right" type="submit">Add</button>
+            <button class="btn btn-success float-right" type="button">Cancel</button>
+        </div>
+    </form>
+
+
+
+{% endblock %}
