@@ -1,0 +1,145 @@
+.container {
+	margin-top: 50px;
+}
+
+/* ============== */
+/* Nav bar        */
+/* ============== */
+
+.navbar, .container-fluid {
+	padding: 0%;
+	padding: 0%;
+}
+.navbar-brand {
+	font-size: 30px;
+	font-weight: 600;
+}
+.btnLink {
+	background: none!important;
+	border: none;
+	padding: 0!important;
+	color: #007bff;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.btnLink:hover { 
+	color: #0056b3; 
+}
+.linkUnderline {
+    text-decoration: underline;
+}
+.nav_margin {
+	margin-right: 30px;
+}
+
+/* ============== */
+/* Headers        */
+/* ============== */
+
+.spacer_top {
+	margin-top: 30px;
+}
+
+
+/* ============== */
+/* Table stripped */
+/* ============== */
+
+.table-striped {
+	border: 2px solid #C8C8C8;
+}
+.table-striped td {
+	border-left: 2px solid #C8C8C8;
+}
+.table-striped th {
+	border-left: 2px solid #C8C8C8;
+}
+.table-striped th {
+	background-color: #D8D8D8;
+}
+.td_spacer_LR {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+.td_spacer_left {
+	padding-left: 15px;
+	padding-bottom: 15px;
+}
+
+
+/* ============== */
+/* Display Page   */
+/* ============== */
+
+.view_trip {
+	border: 3px solid black;
+	padding: 15px;
+}
+
+
+/* ============== */
+/* Add New Page   */
+/* ============== */
+
+.container_new {
+    border: 3px solid black;
+    height: 423px;
+    width: 576px;
+    padding: 30px;
+    margin-top: 75px;
+    overflow: hidden; /* Added so button will be inside div */
+}
+
+
+/* ============== */
+/* Edit Page      */
+/* ============== */
+
+.edit_btn {
+    margin-left: 50%;
+}
+
+
+
+
+
+.box {
+	margin-top: 15px;
+	vertical-align: top;
+	width: 50%	
+}
+.box_margin {
+	margin-top: 34px;
+}
+
+.spacer_left {
+	margin-left: 50px;
+}
+
+.box {
+	margin-top: 15px;
+	vertical-align: top;
+	width: 50%;
+
+}
+.box_margin {
+	margin-top: 34px;
+	border: 3px solid black;
+}
+
+.input_format {
+	width: auto;
+	font-size: 25px;
+}
+.pull-right{
+    display: inline-block;
+	padding-left: 10px;
+}
+hr {
+    height: 1px;
+    background-color: #333;
+}
+ul {
+	list-style-type: none;
+
+}

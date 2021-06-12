@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <p class="navbar-brand">JustQuizIt</p>
+        <p class="nav-item">Welcome {{ first_name }}!</p>
+
+        <div class="d-flex">
+            <form action="#" method="GET">
+            {% csrf_token %}
+                <button class="spacer_left nav-item btn btn-outline-secondary">Create Quiz</button>
+            </form>
+
+            <form action="#" method="GET">
+            {% csrf_token %}
+                <button class="spacer_left nav-item btn btn-outline-secondary">Create Questions</button>
+            </form>                    
+            
+            <form action="/logout" method="POST">
+            {% csrf_token %}
+                <button class="btnLink nav-item linkUnderline">Log Out</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<h1 class="spacer_top">Dashboard</h1>
+
+<h3 class="spacer_top">Quizzes Taken</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Quiz ID</th>
+                <th>Quiz Name</th>
+                <th>Last Taken</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+</table>
+
+
+
+<h3 class="spacer_top">Avaliable Quizzes</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Quiz ID</th>
+            <th>Quiz Name</th>
+            <th>Source</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    {% endfor %}
+</table>
+
+{% endblock %}
