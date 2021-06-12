@@ -1,5 +1,31 @@
 .container {
-	margin-top: 50px;
+	margin-top: 20px;
+}
+.header {
+	text-align: center;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	font-weight: 600;
+}
+
+/* ================ */
+/* Register - Login */
+/* ================ */
+
+.box_format {
+	margin-top: 15px;
+	vertical-align: top;
+	border: 3px solid black;
+	padding: 30px 50px 30px 40px;
+}
+.box_left {
+	width: 50%;
+	margin-right: 100px;
+}
+.box_header {
+	text-align: center;
+	margin-bottom: 30px;
+	font-weight: 600;
 }
 
 /* ============== */
@@ -8,41 +34,34 @@
 
 .navbar, .container-fluid {
 	padding: 0%;
-	padding: 0%;
+}
+.container-fluid {
+	border-bottom: 1px solid black;
 }
 .navbar-brand {
 	font-size: 30px;
 	font-weight: 600;
 }
-.btnLink {
+.btnAsLink {
 	background: none!important;
 	border: none;
-	padding: 0!important;
+	padding-right: 20px !important;
 	color: #007bff;
 	text-decoration: underline;
 	cursor: pointer;
 }
-.btnLink:hover { 
+.btnAsLink:hover { 
 	color: #0056b3; 
 }
 .linkUnderline {
     text-decoration: underline;
 }
-.nav_margin {
-	margin-right: 30px;
+.container-fluid p {
+    padding-right: 30px;
 }
 
 /* ============== */
-/* Headers        */
-/* ============== */
-
-.spacer_top {
-	margin-top: 30px;
-}
-
-
-/* ============== */
-/* Table stripped */
+/* Dashboard      */
 /* ============== */
 
 .table-striped {
@@ -103,29 +122,11 @@
 
 
 
-.box {
-	margin-top: 15px;
-	vertical-align: top;
-	width: 50%	
-}
-.box_margin {
-	margin-top: 34px;
-}
-
 .spacer_left {
 	margin-left: 50px;
 }
 
-.box {
-	margin-top: 15px;
-	vertical-align: top;
-	width: 50%;
 
-}
-.box_margin {
-	margin-top: 34px;
-	border: 3px solid black;
-}
 
 .input_format {
 	width: auto;

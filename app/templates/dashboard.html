@@ -8,28 +8,29 @@
 <nav class="navbar">
     <div class="container-fluid">
         <p class="navbar-brand">JustQuizIt</p>
-        <p class="nav-item">Welcome {{ first_name }}!</p>
+
 
         <div class="d-flex">
+            <p class="nav-item">Welcome {{ first_name }}!</p>
             <form action="#" method="GET">
             {% csrf_token %}
-                <button class="spacer_left nav-item btn btn-outline-secondary">Create Quiz</button>
+                <button class="btnAsLink linkUnderline nav-item">Create Quiz</button>
             </form>
 
             <form action="#" method="GET">
             {% csrf_token %}
-                <button class="spacer_left nav-item btn btn-outline-secondary">Create Questions</button>
+                <button class="btnAsLink linkUnderline nav-item">Create Questions</button>
             </form>                    
             
             <form action="/logout" method="POST">
             {% csrf_token %}
-                <button class="btnLink nav-item linkUnderline">Log Out</button>
+                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
             </form>
         </div>
     </div>
 </nav>
 
-<h1 class="spacer_top">Dashboard</h1>
+<h1 class="header">Your Quiz Dashboard</h1>
 
 <h3 class="spacer_top">Quizzes Taken</h3>
     <table class="table table-striped">
@@ -37,7 +38,9 @@
             <tr>
                 <th>Quiz ID</th>
                 <th>Quiz Name</th>
-                <th>Last Taken</th>
+                <th>Status</th>
+                <th>Date Started</th>
+                <th>Date Completed</th>
                 <th>Score</th>
                 <th>Actions</th>
             </tr>
@@ -52,11 +55,12 @@
         <tr>
             <th>Quiz ID</th>
             <th>Quiz Name</th>
+            <th>Type</th>
             <th>Source</th>
-            <th>Action</th>
+            <th>Date Added</th>
+            <th>Action</th>            
         </tr>
     </thead>
-    {% endfor %}
 </table>
 
 {% endblock %}
