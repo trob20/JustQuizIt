@@ -44,7 +44,7 @@ def login(request):
 
         if bcrypt.checkpw(password_input.encode(), logged_in_user.password.encode()):
             request.session["u_id"] = logged_in_user.id
-            return redirect("/dashboard")
+            return redirect("/quiz/dashboard")
         else:
             messages.error(request, "Invalid credentials")
             return redirect ("/")
@@ -72,3 +72,5 @@ def dashboard(request):
         }
         return render(request, "dashboard.html", context)
     return redirect ("/")
+
+
