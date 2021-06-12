@@ -46,7 +46,7 @@
 
     </form>
 
-<h3 class="spacer_top">Quiz Questions</h3>
+<h3>Quiz Questions</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -60,11 +60,10 @@
             <th>Action</th>
         </tr>
     </thead>
+    
 </table>
 
-
-
-<h3 class="spacer_top">Question Bank</h3>
+<h3>Question Bank</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -78,6 +77,42 @@
             <th>Action</th>        
         </tr>
     </thead>
+
+    {% for question in questions %}
+        {% for options in answer_options.all %}
+
+            <tbody>
+                <tr>
+                    <td>{{ question.id }}</td>
+                    <td>{{ question.source }}</td>
+                    <td>{{ question.source_name }}</td>
+                    <td>{{ question.technology }}</td>
+                    <td>{{ question.domain }}</td>
+                    <td>{{ question.type}}</td>
+                    <td>{{ question.text}}</td>
+                    <td>
+                        <div class='row'>
+                            <a class="linkUnderline a_spacer1" href="/questions/select/{{ question.id }}">Add</a>
+                            
+                            <p class='a_spacer2'>|</p>
+                            <form action="/questions/edit/{{ question.id }}" method="GET">
+                                {% csrf_token %}
+                                <button class="linkUnderline btnAsLink">Edit</button>
+                            </form>
+
+                            <p class='a_spacer2'>|</p>
+                            <form action="/questions/delete/{{ question.id }}" method="POST">
+                                {% csrf_token %}
+                                <button class="linkUnderline btnAsLink">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
+        {% endfor %}
+    {% endfor %}
+    
 </table>
 
 {% endblock %}

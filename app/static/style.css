@@ -60,9 +60,9 @@
     padding-right: 30px;
 }
 
-/* ============== */
-/* Dashboard      */
-/* ============== */
+/* ========================== */
+/* Dashboard, Create Quiz     */
+/* ========================== */
 
 .table-striped {
 	border: 2px solid #C8C8C8;
@@ -84,6 +84,11 @@
 	padding-left: 15px;
 	padding-bottom: 15px;
 }
+
+/* ============== */
+/* Create Quiz    */
+/* ============== */
+
 
 
 /* ============== */
