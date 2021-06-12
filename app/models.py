@@ -90,7 +90,7 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     question_created_by = models.ForeignKey(User, related_name = "questions_created", on_delete=models.CASCADE)
-    related_quiz = models.ManyToManyField(Quiz, related_name = "questions", null=True)
+    related_quiz = models.ManyToManyField(Quiz, related_name = "questions")
     objects = QuestionManager()
 
     # answer_options - one-to-many
@@ -99,9 +99,9 @@ class Question(models.Model):
 class AnswerOption(models.Model):
     answer_option = models.CharField(max_length=255)
     answer = models.CharField(max_length=10, default="Incorrect")
-    related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
 
 
 #==========================================================
@@ -109,54 +109,55 @@ class AnswerOption(models.Model):
 #==========================================================
 
 
-class QuizTaken(models.Model):
-    name = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, related_name = "quizzes_created", on_delete=models.CASCADE)
+# class QuizTaken(models.Model):
+#     name = models.CharField(max_length=50)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     created_by = models.ForeignKey(User, related_name = "quizzes_created", on_delete=models.CASCADE)
 
-    # questions - many-to-many
-    # quiz_taken - one-to-many
-
-
-class QuestionTaken(models.Model):
-    source = models.CharField(max_length=10)
-    source_name = models.CharField(max_length=25)
-    technology = models.CharField(max_length=25)
-    domain = models.CharField(max_length=50)
-    question_type = models.CharField(max_length=20)
-    question_text = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    question_created_by = models.ForeignKey(User, related_name = "questions_created", on_delete=models.CASCADE)
-    related_quiz = models.ManyToManyField(Quiz, related_name = "questions", null=True)
-    # answer_options - one-to-many
+#     # questions - many-to-many
+#     # quiz_taken - one-to-many
 
 
-class AnswerOptionTaken(models.Model):
-    answer_option = models.CharField(max_length=255)
-    answer = models.CharField(max_length=10, default="Incorrect")
-    related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    # answer_selected - one-to-one
-
-
-class AnswerSelected(models.Model):
-    answer_selected = models.ForeignKey(AnswerOptionTaken, related_name="answer_selected", on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class QuestionTaken(models.Model):
+#     source = models.CharField(max_length=10)
+#     source_name = models.CharField(max_length=25)
+#     technology = models.CharField(max_length=25)
+#     domain = models.CharField(max_length=50)
+#     question_type = models.CharField(max_length=20)
+#     question_text = models.CharField(max_length=255)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     question_created_by = models.ForeignKey(User, related_name = "questions_created", on_delete=models.CASCADE)
+#     related_quiz = models.ManyToManyField(Quiz, related_name = "questions")
+#     # answer_options - one-to-many
 
 
-class QuizHistory(models.Model):
-    status = models.CharField(max_length=12)
-    start_date = models.DateTimeField()
-    completed_date = models.DateTimeField(null=True)
-    quiz_taken_by = models.ForeignKey(User, related_name = "quiz_history", on_delete=models.CASCADE)
-    quiz = models.ForeignKey(QuizTaken, related_name = "quiz_taken", on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# class AnswerOptionTaken(models.Model):
+#     answer_option = models.CharField(max_length=255)
+#     answer = models.CharField(max_length=10, default="Incorrect")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
+
+#     # answer_selected - one-to-one
+
+
+# class AnswerSelected(models.Model):
+#     correct = models.BooleanField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     answer_selected = models.ForeignKey(AnswerOptionTaken, related_name="answer_selected", on_delete=models.CASCADE)    
+
+
+# class QuizHistory(models.Model):
+#     status = models.CharField(max_length=12)
+#     start_date = models.DateTimeField()
+#     completed_date = models.DateTimeField(null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     quiz_taken_by = models.ForeignKey(User, related_name = "quiz_history", on_delete=models.CASCADE)
+#     quiz = models.ForeignKey(QuizTaken, related_name = "quiz_taken", on_delete=models.CASCADE)
 
 
 #==========================================================

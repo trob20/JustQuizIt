@@ -11,7 +11,7 @@
 
         <div class="d-flex">
             <p class="nav-item">Welcome {{ first_name }}!</p>
-            <form action="/quiz/dashboard" method="GET">
+            <form action="/dashboard" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
             </form>
@@ -26,13 +26,13 @@
 
 <h1 class="header">Add Question</h1>
 
-    <form action="/courses/create" method="POST">
+    <form action="/quiz/create_question" method="POST">
         {% csrf_token %}
 
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Technology</label>
             <div class="col-sm-6">
-                <input class="form-control" type="text" name="name"/>
+                <input class="form-control" type="text" name="technology"/>
             </div>
         </div>
 
@@ -40,8 +40,8 @@
             <label class="col-sm-2 col-form-label">Domain</label>
             <div class="col-sm-6">
                 <select name="domain">
-                    {% for domain in domains %}
                         <option disabled selected value="none"></option>
+                    {% for domain in domains %}
                         <option value="{{ domain.name }}">{{ domain.name }}</option>  
                     {% endfor %}
                 </select>
@@ -53,8 +53,8 @@
             <label class="col-sm-2 col-form-label">Question Type</label>
             <div class="col-sm-6">
                 <select name="question_type">
+                    <option disabled selected value="none"></option>
                     {% for type in question_types %}
-                        <option disabled selected value="none"></option>
                         <option value="{{ type.name }}">{{ type.name }}</option>  
                     {% endfor %}
                 </select>
@@ -66,13 +66,6 @@
             <label class="col-sm-2 col-form-label">Question Text</label>
             <div class="col-sm-6">
                 <textarea class="form-control" type="textField" rows="2" name="question_text"></textarea>
-            </div>
-        </div>
-
-        <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-6">
-                <button class="btn btn-success" type="button">Add Answer Options</button>
             </div>
         </div>
 

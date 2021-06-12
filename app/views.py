@@ -109,11 +109,11 @@ def dashboard(request):
 # Display New - Question, Answer Options
 #==========================================================
 
-def display_new_question(request):
+def add_question(request):
     if(request.method=="GET"): 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/index")
+            return redirect ("/")
 
         domain = Domain.objects.all()
         question_type = QuestionType.objects.all()
@@ -121,50 +121,28 @@ def display_new_question(request):
             "domains": domain,
             "question_types": question_type
         }
-        return render(request, "new_question.html", context)
+        return render(request, "add_question.html", context)
 
-    return redirect ("/index")
+    return redirect ("/")
 
-
-def display_new_option(request):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/index")
-
-        correct = Correct.objects.all()
-        question = Question.objects.get("q_id", id)
-
-        context = {
-            "correct": correct,
-            "question": question
-        }
-        return render(request, "new_option.html", context)
-    return redirect ("/index")
-
-
-#==========================================================
-# Create - Question, Answer Options
-#==========================================================
 
 def create_question(request):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
-        errors = Question.objects.basic_validator(request.POST)
-        if len(errors) > 0:
-            for key, value in errors.items():
-                messages.error(request, value)
-            return redirect('/question/new')
+        # errors = Question.objects.basic_validator(request.POST)
+        # if len(errors) > 0:
+        #     for key, value in errors.items():
+        #         messages.error(request, value)
+        #     return redirect('/quiz/add_question')
 
         user = User.objects.get(id=request.session["u_id"])
 
-        Question.objects.create(name=request.POST['name'])
         Question.objects.create(
-            source=request.POST['source'], 
-            source_name=request.POST['source_name'], 
+            source="User", 
+            source_name=user.first_name, 
             technology=request.POST['technology'], 
             domain=request.POST['domain'], 
             question_type=request.POST['question_type'], 
@@ -172,25 +150,50 @@ def create_question(request):
             question_created_by=user
         )
         questionId = Question.objects.last().id
-        return redirect ('/question/edit/'+ str(questionId))
-    return redirect ('/index')
+        return redirect ('/quiz/add_option/'+ str(questionId))
+    return redirect ('/')
 
 
-def create_option(request):
+
+
+
+#==========================================================
+# Create - Question, Answer Options
+#==========================================================
+
+
+def add_option(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        correct = Correct.objects.all()
+        question = Question.objects.get(id=id)
+
+        context = {
+            "correct": correct,
+            "question": question
+        }
+        return render(request, "add_option.html", context)
+    return redirect ("/")
+
+
+def create_option(request, id):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
-        errors = AnswerOption.objects.basic_validator(request.POST)
-        if len(errors) > 0:
-            for key, value in errors.items():
-                messages.error(request, value)
-            return redirect('/option/new')
+        # errors = AnswerOption.objects.basic_validator(request.POST)
+        # if len(errors) > 0:
+        #     for key, value in errors.items():
+        #         messages.error(request, value)
+        #     return redirect('/option/new')
 
-        user = User.objects.get(id=request.session["u_id"])
+        user = User.objects.get(id=id)
 
-        question = Question.objects.get(id=request.session["question_id"])
+        question = Question.objects.get(id=question_id)
 
         AnswerOption.objects.create(
             answer_option=request.POST['answer_option'], 
@@ -199,8 +202,8 @@ def create_option(request):
         option = AnswerOption.objects.last()
         option.related_question = question
 
-        return redirect ('/option/edit/'+ str(optionId))
-    return redirect ('/index')
+        return redirect ('/dashboard')
+    return redirect ('/')
 
 
 
@@ -208,30 +211,30 @@ def create_option(request):
 # Display Edit - Question, Answer Options
 #==========================================================
 
-def display_edit_question(request, id):
+def edit_question(request, question_id):
     if(request.method=="GET"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
         context= {
-            "question": Question.objects.get(id=id),
+            "question": Question.objects.get(id=question_id),
         }
         return render(request, "edit_question.html", context)
-    return redirect ('/index')
+    return redirect ('/')
 
 
-def display_edit_option(request, id):
+def edit_option(request, option_id):
     if(request.method=="GET"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
         context= {
-            "option": AnswerOption.objects.get(id=id),
+            "option": AnswerOption.objects.get(id=option_id),
         }
         return render(request, "edit_option.html", context)
-    return redirect ('/index')
+    return redirect ('/')
 
 
 
@@ -240,19 +243,19 @@ def display_edit_option(request, id):
 #==========================================================
 
 
-def update_question(request, id):
+def update_question(request, question_id):
     if(request.method=="POST"):
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
         errors = Question.objects.basic_validator(request.POST)
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect ('/question/edit/'+ str(id))
+            return redirect ('/question/edit/'+ str(question_id))
 
-        question = Question.objects.get(id=id)
+        question = Question.objects.get(id=question_id)
         question.source=request.POST['source']
         question.source_name=request.POST['source_name']
         question.technology=request.POST['technology']
@@ -262,29 +265,29 @@ def update_question(request, id):
         question.question_created_by.id['user_id']
         question.save()
 
-        return redirect ('/question/edit/'+ str(id))
-    return redirect ('/index')
+        return redirect ('/question/edit/'+ str(question_id))
+    return redirect ('/')
 
 
-def update_option(request, id):
+def update_option(request, option_id):
     if(request.method=="POST"):
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
         errors = AnswerOption.objects.basic_validator(request.POST)
         if len(errors) > 0:
             for key, value in errors.items():
                 messages.error(request, value)
-            return redirect ('/option/edit/'+ str(id))
+            return redirect ('/option/edit/'+ str(option_id))
 
-        option = AnswerOption.objects.get(id=id)
+        option = AnswerOption.objects.get(id=option_id)
         option.answer_option=request.POST['answer_option']
         option.answer=request.POST['answer']
         option.save()
 
-        return redirect ('/option/edit/'+ str(id))
-    return redirect ('/index')
+        return redirect ('/option/edit/'+ str(option_id))
+    return redirect ('/')
 
 
 
@@ -292,24 +295,24 @@ def update_option(request, id):
 # Delete - Question, Answer Options
 #==========================================================
 
-def delete_question(request, id):
+def delete_question(request, question_id):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
-        question = Question.objects.get(id=id)
+        question = Question.objects.get(id=question_id)
         question.delete()
         return redirect ('/quiz/dashboard')
-    return redirect ('/index')
+    return redirect ('/')
 
-def delete_option(request, id):
+def delete_option(request, option_id):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/index")
+            return redirect ("/")
 
-        option = AnswerOption.objects.get(id=id)
+        option = AnswerOption.objects.get(id=option_id)
         option.delete()
         return redirect ('/quiz/dashboard')
-    return redirect ('/index')
+    return redirect ('/')
