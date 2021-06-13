@@ -11,7 +11,7 @@
 
         <div class="d-flex">
             <p class="nav-item">Welcome {{ first_name }}!</p>
-            <form action="dashboard" method="GET">
+            <form action="/dashboard" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
             </form>
@@ -57,50 +57,44 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Question ID</th>
-            <th>Type</th>
-            <th>Source</th>
-            <th>Technology</th>
-            <th>Domain</th>
-            <th>Question Type</th>
-            <th>Question Text</th>
-            <th>Action</th>        
+            <th style="width: 5%">ID</th>
+            <th style="width: 10%">Source</th>
+            <th style="width: 10%">Technology</th>
+            <th style="width: 10%">Domain</th>
+            <th style="width: 10%">Question Type</th>
+            <th style="width: 35%">Question Text</th>
+            <th style="width: 20%">Action</th>        
         </tr>
     </thead>
 
     {% for question in questions %}
-        {% for options in answer_options.all %}
+        <tbody>
+            <tr>
+                <td>{{ question.id }}</td>
+                <td>{{ question.source_name }}</td>
+                <td>{{ question.technology }}</td>
+                <td>{{ question.domain }}</td>
+                <td>{{ question.question_type}}</td>
+                <td>{{ question.question_text}}</td>
+                <td>
+                    <div class='row'>
+                        <a class="linkUnderline action_spacer1" href="/questions/select/{{ question.id }}">Add</a>
 
-            <tbody>
-                <tr>
-                    <td>{{ question.id }}</td>
-                    <td>{{ question.source }}</td>
-                    <td>{{ question.source_name }}</td>
-                    <td>{{ question.technology }}</td>
-                    <td>{{ question.domain }}</td>
-                    <td>{{ question.type}}</td>
-                    <td>{{ question.text}}</td>
-                    <td>
-                        <div class='row'>
-                            <a class="linkUnderline action_spacer1" href="/questions/select/{{ question.id }}">Add</a>
+                        <p class='action_spacer2'>|</p>
+                        <form action="/questions/edit/{{ question.id }}" method="GET">
+                            {% csrf_token %}
+                            <button class="linkUnderline btnAsLink">Edit</button>
+                        </form>
 
-                            <p class='action_spacer2'>|</p>
-                            <form action="/questions/edit/{{ question.id }}" method="GET">
-                                {% csrf_token %}
-                                <button class="linkUnderline btnAsLink">Edit</button>
-                            </form>
-
-                            <p class='action_spacer2'>|</p>
-                            <form action="/questions/delete/{{ question.id }}" method="POST">
-                                {% csrf_token %}
-                                <button class="linkUnderline btnAsLink">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                        <p class='action_spacer2'>|</p>
+                        <form action="/questions/delete/{{ question.id }}" method="POST">
+                            {% csrf_token %}
+                            <button class="linkUnderline btnAsLink">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
             </tbody>
-
-        {% endfor %}
     {% endfor %}
     
 </table>

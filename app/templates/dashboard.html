@@ -12,7 +12,7 @@
 
         <div class="d-flex">
             <p class="nav-item">Welcome {{ first_name }}!</p>
-            <form action="#" method="GET">
+            <form action="/quiz/display_quiz" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Create Quiz</button>
             </form>
@@ -55,12 +55,43 @@
         <tr>
             <th>Quiz ID</th>
             <th>Quiz Name</th>
-            <th>Type</th>
-            <th>Source</th>
-            <th>Date Added</th>
+            <th>Source Name</th>
             <th>Action</th>            
         </tr>
     </thead>
+
+    {% for quiz in quizzes %}
+        <tbody>
+            <tr>
+                <td>{{ quiz.id }}</td>
+                <td>{{ quiz.name }}</td>
+                <td></td>
+                <td>
+                    <div class='row'>
+                        <form action="#" method="GET">
+                            {% csrf_token %}
+                            <button class="linkUnderline btnAsLink">Take</button>
+                        </form>
+
+                        <p class='action_spacer2'>|</p>
+                        <a class="linkUnderline action_spacer1" href="#">View</a>
+
+                        <p class='action_spacer2'>|</p>
+                        <form action="#" method="GET">
+                            {% csrf_token %}
+                            <button class="linkUnderline btnAsLink">Edit</button>
+                        </form>
+
+                        <p class='action_spacer2'>|</p>
+                        <form action="#" method="POST">
+                            {% csrf_token %}
+                            <button class="linkUnderline btnAsLink">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    {% endfor %}
 </table>
 
 {% endblock %}

@@ -74,11 +74,12 @@ def dashboard(request):
             return redirect ("/")
 
         u_id = request.session["u_id"]
-        user = User.objects.get(id=u_id)        
+        user = User.objects.get(id=u_id)
+        quiz = Quiz.objects.all()     
 
         context = {
             "first_name": user.first_name,
-            "u_id": u_id
+            "quizzes": quiz
         }
         return render(request, "dashboard.html", context)
     return redirect ("/")
@@ -99,7 +100,7 @@ def display_quiz(request):
         context = {
             "questions": question
         }
-        return render(request, "add_quiz.html", context)
+        return render(request, "create_quiz.html", context)
 
     return redirect ("/")
 
