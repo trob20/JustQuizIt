@@ -68,7 +68,7 @@
                 <td></td>
                 <td>
                     <div class='row'>
-                        <form action="#" method="GET">
+                        <form action="/quiz/take_quiz/{{ quiz.id }}" method="GET">
                             {% csrf_token %}
                             <button class="linkUnderline btnAsLink">Take</button>
                         </form>

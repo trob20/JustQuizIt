@@ -86,6 +86,17 @@
 }
 
 /* ============== */
+/* Take Quiz    */
+/* ============== */
+
+.radio_btn {
+	padding-left: 40px !important;
+}
+.spacer_top {
+	margin-top: 15px;
+}
+
+/* ============== */
 /* Create Quiz    */
 /* ============== */
 

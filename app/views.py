@@ -90,21 +90,6 @@ def dashboard(request):
 # Create Quiz
 #==========================================================
 
-def display_quiz(request):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        question = Question.objects.all()
-        context = {
-            "questions": question
-        }
-        return render(request, "create_quiz.html", context)
-
-    return redirect ("/")
-
-
 def create_quiz(request):
     if(request.method=="POST"): 
         sessionTest = request.session.get('u_id', 'no u_id')
@@ -134,15 +119,125 @@ def create_quiz(request):
 
 
 #==========================================================
-# Create Quiz Results
+# Take Quiz
 #==========================================================
 
+def take_quiz(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        quiz = Quiz.objects.get(id=id)
+
+        print("QUIZ1: ", quiz.name)
+        print("QUIZ2: ", quiz.questions.all())
+
+
+        # print("QUIZ3: ", quiz.questions.answer_options.answer_options)
+
+        context = {
+            "quiz": quiz
+        }
+        return render(request, "take_quiz.html", context)
+
+    return redirect ("/")
+
+
+#==========================================================
+# Record Answer
+#==========================================================
+
+def record_answer(request, id):
+    if(request.method=="POST"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        quiz = Quiz.objects.get(id=id)
+
+        return redirect('/quiz/take_quiz/' + id)
+
+    return redirect ("/")
+
+
+#==========================================================
+# Exit Quiz
+#==========================================================
+
+def exit_quiz(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        quiz = Quiz.objects.get(id=id)
+
+        # print("QUIZ1: ", quiz.name)
+        # print("QUIZ2: ", quiz.questions.question_text)
+        # print("QUIZ3: ", quiz.questions.answer_options.answer_options)
+
+        context = {
+            "quiz": quiz
+        }
+        return redirect('/dashboard')
+
+    return redirect ("/")
+
+
+#==========================================================
+# Save Quiz
+#==========================================================
+
+def save_quiz(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+
+        Question.objects.create(
+            source="User", 
+            source_name=user.first_name, 
+            technology=request.POST['technology'], 
+            domain=request.POST['domain'], 
+            question_type=request.POST['question_type'], 
+            question_text=request.POST['question_text'], 
+            question_created_by=user
+        )
+
+        return redirect('/take_quiz/' + str(id))
+
+    return redirect ("/")
 
 
 
 #==========================================================
 # Display Results
 #==========================================================
+
+def results(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        results = QuizHistory.objects.get(id=id)
+
+        question_type = QuestionType.objects.all()
+        context = {
+            "domains": domain,
+            "question_types": question_type
+        }
+        return render(request, "add_question.html", context)
+
+    return redirect ("/")
+
+
+
+
+
 
 
 
@@ -191,7 +286,7 @@ def create_question(request):
             question_created_by=user
         )
         questionId = Question.objects.last().id
-        return redirect ('/question/display_option/'+ str(questionId))
+        return redirect ('/question/display_option/'+ str(id))
     return redirect ('/')
 
 
@@ -234,7 +329,7 @@ def create_option(request, id):
 
         user = User.objects.get(id=id)
 
-        question = Question.objects.get(id=question_id)
+        question = Question.objects.get(id=id)
 
         AnswerOption.objects.create(
             answer_option=request.POST['answer_option'], 
@@ -276,7 +371,7 @@ def update_question(request, id):
                 messages.error(request, value)
             return redirect ('/question/edit/'+ str(id))
 
-        question = Question.objects.get(id=question_id)
+        question = Question.objects.get(id=id)
         question.source=request.POST['source']
         question.source_name=request.POST['source_name']
         question.technology=request.POST['technology']

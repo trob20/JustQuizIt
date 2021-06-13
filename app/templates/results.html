@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Results{% endblock %}
+
+{% block content %}
+
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <p class="navbar-brand">JustQuizIt</p>
+
+        <div class="d-flex">
+            <p class="nav-item">Welcome {{ first_name }}!</p>
+            <form action="/dashboard" method="GET">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
+            </form>
+
+            <form action="/logout" method="POST">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<h1 class="header">Quiz Results</h1>
+
+<div class="mb-3 row">
+    <label class="col-sm-2">Questions Incorrect</label>
+    <div class="col-sm-6">
+        <p>{{ results.question_text }} </p>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2">Questions Correct</label>
+    <div class="col-sm-6">
+        <p>{{ results.question_text }} </p>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2">Score</label>
+    <div class="col-sm-6">
+        <p>{{ results.question_text }} </p>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2">Completed On</label>
+    <div class="col-sm-6">
+        <p>{{ results.completed_date }} </p>
+    </div>
+</div>
+
+{% endblock %}
