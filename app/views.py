@@ -86,10 +86,50 @@ def dashboard(request):
 
 
 #==========================================================
-# Display Quiz
+# Create Quiz
 #==========================================================
 
+def display_quiz(request):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
 
+        question = Question.objects.all()
+        context = {
+            "questions": question
+        }
+        return render(request, "add_quiz.html", context)
+
+    return redirect ("/")
+
+
+def create_quiz(request):
+    if(request.method=="POST"): 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect ("/")
+
+        # errors = Quiz.objects.basic_validator(request.POST)
+        # if len(errors) > 0:
+        #     for key, value in errors.items():
+        #         messages.error(request, value)
+        #     return redirect('/quiz/display_quiz')
+
+        user = User.objects.get(id=request.session["u_id"])
+
+        Quiz.objects.create(
+            source="User", 
+            source_name=user.first_name, 
+            technology=request.POST['technology'], 
+            domain=request.POST['domain'], 
+            question_type=request.POST['question_type'], 
+            question_text=request.POST['question_text'], 
+            question_created_by=user
+        )
+        questionId = Question.objects.last().id
+        return redirect ('/question/display_option/'+ str(questionId))
+    return redirect ('/')
 
 
 #==========================================================
@@ -106,7 +146,7 @@ def dashboard(request):
 
 
 #==========================================================
-# Display New - Question, Answer Options
+# Create Question
 #==========================================================
 
 def display_question(request):
@@ -158,7 +198,7 @@ def create_question(request):
 
 
 #==========================================================
-# Create - Question, Answer Options
+# Create Answer Options
 #==========================================================
 
 
@@ -208,7 +248,7 @@ def create_option(request, id):
 
 
 #==========================================================
-# Display Edit - Question, Answer Options
+# Edit Question
 #==========================================================
 
 def edit_question(request, id):
@@ -222,26 +262,6 @@ def edit_question(request, id):
         }
         return render(request, "edit_question.html", context)
     return redirect ('/')
-
-
-def edit_option(request, id):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get('u_id', 'no u_id')
-        if sessionTest == 'no u_id': 
-            return redirect ("/")
-
-        context= {
-            "option": AnswerOption.objects.get(id=id),
-        }
-        return render(request, "edit_option.html", context)
-    return redirect ('/')
-
-
-
-#==========================================================
-# Update - Question, Answer Options
-#==========================================================
-
 
 def update_question(request, id):
     if(request.method=="POST"):
@@ -269,6 +289,24 @@ def update_question(request, id):
     return redirect ('/')
 
 
+
+
+#==========================================================
+# Edit Answer Option
+#==========================================================
+
+def edit_option(request, id):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect ("/")
+
+        context= {
+            "option": AnswerOption.objects.get(id=id),
+        }
+        return render(request, "edit_option.html", context)
+    return redirect ('/')
+
 def update_option(request, id):
     if(request.method=="POST"):
         sessionTest = request.session.get('u_id', 'no u_id')
@@ -291,8 +329,10 @@ def update_option(request, id):
 
 
 
+
+
 #==========================================================
-# Delete - Question, Answer Options
+# Delete Question, Answer Options
 #==========================================================
 
 def delete_question(request, id):
