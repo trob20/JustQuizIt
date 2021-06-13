@@ -78,18 +78,19 @@
                 <td>{{ question.question_text}}</td>
                 <td>
                     <div class='row'>
-                        <a class="linkUnderline action_spacer1" href="/questions/select/{{ question.id }}">Add</a>
+                        <p class='action_spacer'></p>
+                        <a class="remove_style linkUnderline" href="/questions/select/{{ question.id }}">Add</a>
 
-                        <p class='action_spacer2'>|</p>
+                        <p class='action_spacer'>|</p>
                         <form action="/questions/edit/{{ question.id }}" method="GET">
                             {% csrf_token %}
-                            <button class="linkUnderline btnAsLink">Edit</button>
+                            <button class="remove_style linkUnderline btnAsLink">Edit</button>
                         </form>
 
-                        <p class='action_spacer2'>|</p>
+                        <p class='action_spacer'>|</p>
                         <form action="/questions/delete/{{ question.id }}" method="POST">
                             {% csrf_token %}
-                            <button class="linkUnderline btnAsLink">Delete</button>
+                            <button class="remove_style linkUnderline btnAsLink">Delete</button>
                         </form>
                     </div>
                 </td>

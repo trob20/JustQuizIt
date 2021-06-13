@@ -10,7 +10,7 @@
         <p class="navbar-brand">JustQuizIt</p>
 
         <div class="d-flex">
-            <p class="nav-item">Welcome {{ first_name }}!</p>
+            <p class="nav-item">Good Luck {{ first_name }}!</p>
             <form action="/dashboard" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
@@ -24,7 +24,7 @@
     </div>
 </nav>
 
-<h1 class="header">{{ quiz.name }}</h1>
+<h1 class="header">{{ quiz.name }} Quiz</h1>
 <p>{{ quiz.questions.question_text }} </p>
 
 <form action="/quiz/record_answer/{{ quiz.id }}" method="POST">

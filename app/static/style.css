@@ -100,10 +100,11 @@
 /* Create Quiz    */
 /* ============== */
 
-.action_spacer1 {
-	margin-left: 15px;
+.remove_style {
+	padding: 0px  !important;
+	margin: 0px  !important;
 }
-.action_spacer2 {
+.action_spacer {
 	margin-left: 7px;
 	margin-right: 7px;
 }

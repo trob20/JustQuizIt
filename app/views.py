@@ -87,6 +87,31 @@ def dashboard(request):
 
 
 #==========================================================
+# Display Create Quiz Page
+#==========================================================
+
+def display_quiz(request):
+    if(request.method=="GET"): 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect ("/")
+
+        u_id = request.session["u_id"]
+        user = User.objects.get(id=u_id)
+        
+        questions = Question.objects.all()  
+
+        context = {
+            "first_name": user.first_name,
+            "questions": questions
+        }
+        return render(request, "create_quiz.html", context)
+
+    return redirect ('/')
+
+
+
+#==========================================================
 # Create Quiz
 #==========================================================
 
@@ -128,15 +153,13 @@ def take_quiz(request, id):
         if sessionTest == "no u_id": 
             return redirect ("/")
 
+        u_id = request.session["u_id"]
+        user = User.objects.get(id=u_id)
+
         quiz = Quiz.objects.get(id=id)
 
-        print("QUIZ1: ", quiz.name)
-        print("QUIZ2: ", quiz.questions.all())
-
-
-        # print("QUIZ3: ", quiz.questions.answer_options.answer_options)
-
         context = {
+            "first_name": user.first_name,
             "quiz": quiz
         }
         return render(request, "take_quiz.html", context)
@@ -145,51 +168,10 @@ def take_quiz(request, id):
 
 
 #==========================================================
-# Record Answer
+# Grade Quiz
 #==========================================================
 
-def record_answer(request, id):
-    if(request.method=="POST"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        quiz = Quiz.objects.get(id=id)
-
-        return redirect('/quiz/take_quiz/' + id)
-
-    return redirect ("/")
-
-
-#==========================================================
-# Exit Quiz
-#==========================================================
-
-def exit_quiz(request, id):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        quiz = Quiz.objects.get(id=id)
-
-        # print("QUIZ1: ", quiz.name)
-        # print("QUIZ2: ", quiz.questions.question_text)
-        # print("QUIZ3: ", quiz.questions.answer_options.answer_options)
-
-        context = {
-            "quiz": quiz
-        }
-        return redirect('/dashboard')
-
-    return redirect ("/")
-
-
-#==========================================================
-# Save Quiz
-#==========================================================
-
-def save_quiz(request, id):
+def grade_quiz(request, id):
     if(request.method=="GET"): 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
