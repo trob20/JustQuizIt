@@ -172,7 +172,7 @@ def take_quiz(request, id):
 #==========================================================
 
 def grade_quiz(request, id):
-    if(request.method=="GET"): 
+    if(request.method=="POST"): 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
             return redirect ("/")
@@ -192,6 +192,7 @@ def grade_quiz(request, id):
         return redirect('/take_quiz/' + str(id))
 
     return redirect ("/")
+
 
 
 

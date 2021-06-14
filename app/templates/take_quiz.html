@@ -27,7 +27,7 @@
 <h1 class="header">{{ quiz.name }} Quiz</h1>
 <p>{{ quiz.questions.question_text }} </p>
 
-<form action="/quiz/record_answer/{{ quiz.id }}" method="POST">
+<form action="/quiz/grade_quiz/{{ quiz.id }}" method="POST">
 {% csrf_token %}
     {% for question in quiz.questions.all %}
         <p class="spacer_top">{{ forloop.counter }}. {{ question.question_text }} </p>
@@ -40,5 +40,6 @@
     {% endfor %}
     <button class="btn btn-secondary">Grade</button>
 </form>
+
 
 {% endblock %}

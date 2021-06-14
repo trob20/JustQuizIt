@@ -109,14 +109,6 @@ class AnswerOption(models.Model):
 # Results
 #==========================================================
 
-class AnswerSelected(models.Model):
-    correct = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    answer_selected = models.OneToOneField(AnswerOption, on_delete=models.CASCADE)   
-
-
 class QuizHistory(models.Model):
     status = models.CharField(max_length=12)
     start_date = models.DateTimeField()
@@ -125,6 +117,16 @@ class QuizHistory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     quiz_taken_by = models.ForeignKey(User, related_name = "quiz_history", on_delete=models.CASCADE)
     quiz_taken = models.ManyToManyField(Quiz, related_name = "assigned_quizzes")
+
+    # quiz_answers - one-to-many
+
+
+class AnswerSelected(models.Model):
+    correct = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    question = models.OneToOneField(Question, on_delete=models.CASCADE)
+    answer_selected = models.ForeignKey(QuizHistory, related_name = "quiz_answers", on_delete=models.CASCADE)   
 
 
 #==========================================================
