@@ -63,7 +63,7 @@ class Quiz(models.Model):
     objects = QuizManager()
 
     # questions - many-to-many
-    # assigned_quizzes - many-to-many
+    # quizzes_taken - many-to-many
 
 
 class QuestionManager(models.Manager):
@@ -82,11 +82,9 @@ class QuestionManager(models.Manager):
 
 
 class Question(models.Model):
-    source = models.CharField(max_length=10)
-    source_name = models.CharField(max_length=25)
+    source = models.CharField(max_length=25)
     technology = models.CharField(max_length=25)
     domain = models.CharField(max_length=50)
-    question_type = models.CharField(max_length=20)
     question_text = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -99,7 +97,7 @@ class Question(models.Model):
 
 class AnswerOption(models.Model):
     answer_option = models.CharField(max_length=255)
-    answer = models.CharField(max_length=10, default="Incorrect")
+    correct = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
@@ -110,43 +108,28 @@ class AnswerOption(models.Model):
 #==========================================================
 
 class QuizHistory(models.Model):
-    status = models.CharField(max_length=12)
-    start_date = models.DateTimeField()
-    completed_date = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     quiz_taken_by = models.ForeignKey(User, related_name = "quiz_history", on_delete=models.CASCADE)
-    quiz_taken = models.ManyToManyField(Quiz, related_name = "assigned_quizzes")
+    quiz_taken = models.ManyToManyField(Quiz, related_name = "quizzes_taken")
 
     # quiz_answers - one-to-many
 
 
 class AnswerSelected(models.Model):
+    answer_id = models.IntegerField()
     correct = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    answer_selected = models.ForeignKey(QuizHistory, related_name = "quiz_answers", on_delete=models.CASCADE)   
-
+    quiz_history = models.ForeignKey(QuizHistory, related_name = "quiz_answers", on_delete=models.CASCADE)   
+    related_question = models.ForeignKey(Question, related_name = "question_answers", on_delete=models.CASCADE)
 
 #==========================================================
 # Dropdowns
 #==========================================================
 
 
-class QuestionType(models.Model):
-    name = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class Domain(models.Model):
     name = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
-class Correct(models.Model):
-    name = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

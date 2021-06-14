@@ -13,7 +13,7 @@ def index(request):
 
 
 def register(request):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         errors = User.objects.validator(request.POST)
         if len(errors) > 0:
             for key, value in errors.items():
@@ -35,7 +35,7 @@ def register(request):
 
 
 def login(request):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         email = request.POST["email"]
         password_input = request.POST["password"]
 
@@ -56,7 +56,7 @@ def login(request):
 
 
 def logout(request):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         del request.session["u_id"]
         request.session.clear()
     return redirect ("/")
@@ -68,30 +68,102 @@ def logout(request):
 
 
 def dashboard(request):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
             return redirect ("/")
 
-        u_id = request.session["u_id"]
-        user = User.objects.get(id=u_id)
-        quiz = Quiz.objects.all()     
+        user = User.objects.get(id=request.session["u_id"])
+        quizzes = Quiz.objects.all()     
 
         context = {
+            "u_id": u_id,
             "first_name": user.first_name,
-            "quizzes": quiz
+            "quizzes": quizzes
         }
         return render(request, "dashboard.html", context)
     return redirect ("/")
 
 
+#==========================================================
+# Take Quiz
+#==========================================================
+
+def take_quiz(request, id):
+    if request.method=="GET": 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        quiz = Quiz.objects.get(id=id)
+
+        context = {
+            "first_name": user.first_name,
+            "quiz": quiz
+        }
+        return render(request, "take_quiz.html", context)
+
+    return redirect ("/")
+
 
 #==========================================================
-# Display Create Quiz Page
+# Grade Quiz
 #==========================================================
+
+def grade_quiz(request, id):
+    if request.method=="POST": 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        quiz = Quiz.objects.get(id=id)
+        quiz_history = QuizHistory.objects.create(quiz_taken_by=user, quiz_taken=quiz)
+
+        answers = request.POST.getlist("answers_selected")
+        for answer in answers:
+            AnswerSelected.objects.create(
+                answer_id = answer, 
+                correct = request.POST['correct'], 
+                related_question = request.POST['question_id'Question.objects.get(id=id)], 
+                quiz_history = quiz_history
+            )
+        return redirect('quiz/results/' + str(quiz_history.id))
+
+    return redirect ("/")
+
+
+#==========================================================
+# Results
+#==========================================================
+
+def results(request, id):
+    if request.method=="GET": 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect ("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        result = QuizHistory.objects.get(id=id)
+
+        context = {
+            "first_name": user.first_name,
+            "result": result
+        }
+        return render(request, "add_question.html", context)
+
+    return redirect ("/")
+
+
+
+#==========================================================
+# Display Quiz
+#==========================================================
+
 
 def display_quiz(request):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -109,14 +181,12 @@ def display_quiz(request):
 
     return redirect ('/')
 
-
-
 #==========================================================
 # Create Quiz
 #==========================================================
 
 def create_quiz(request):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -130,8 +200,7 @@ def create_quiz(request):
         user = User.objects.get(id=request.session["u_id"])
 
         Quiz.objects.create(
-            source="User", 
-            source_name=user.first_name, 
+            source=user.first_name, 
             technology=request.POST['technology'], 
             domain=request.POST['domain'], 
             question_type=request.POST['question_type'], 
@@ -144,92 +213,11 @@ def create_quiz(request):
 
 
 #==========================================================
-# Take Quiz
-#==========================================================
-
-def take_quiz(request, id):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        u_id = request.session["u_id"]
-        user = User.objects.get(id=u_id)
-
-        quiz = Quiz.objects.get(id=id)
-
-        context = {
-            "first_name": user.first_name,
-            "quiz": quiz
-        }
-        return render(request, "take_quiz.html", context)
-
-    return redirect ("/")
-
-
-#==========================================================
-# Grade Quiz
-#==========================================================
-
-def grade_quiz(request, id):
-    if(request.method=="POST"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        user = User.objects.get(id=request.session["u_id"])
-
-        Question.objects.create(
-            source="User", 
-            source_name=user.first_name, 
-            technology=request.POST['technology'], 
-            domain=request.POST['domain'], 
-            question_type=request.POST['question_type'], 
-            question_text=request.POST['question_text'], 
-            question_created_by=user
-        )
-
-        return redirect('/take_quiz/' + str(id))
-
-    return redirect ("/")
-
-
-
-
-#==========================================================
-# Display Results
-#==========================================================
-
-def results(request, id):
-    if(request.method=="GET"): 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
-
-        results = QuizHistory.objects.get(id=id)
-
-        question_type = QuestionType.objects.all()
-        context = {
-            "domains": domain,
-            "question_types": question_type
-        }
-        return render(request, "add_question.html", context)
-
-    return redirect ("/")
-
-
-
-
-
-
-
-
-#==========================================================
 # Create Question
 #==========================================================
 
 def display_question(request):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
             return redirect ("/")
@@ -246,7 +234,7 @@ def display_question(request):
 
 
 def create_question(request):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -260,7 +248,6 @@ def create_question(request):
         user = User.objects.get(id=request.session["u_id"])
 
         Question.objects.create(
-            source="User", 
             source_name=user.first_name, 
             technology=request.POST['technology'], 
             domain=request.POST['domain'], 
@@ -282,7 +269,7 @@ def create_question(request):
 
 
 def display_option(request, id):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
             return redirect ("/")
@@ -299,7 +286,7 @@ def display_option(request, id):
 
 
 def create_option(request, id):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -309,8 +296,6 @@ def create_option(request, id):
         #     for key, value in errors.items():
         #         messages.error(request, value)
         #     return redirect('/question/display_option/'+ str(id)')
-
-        user = User.objects.get(id=id)
 
         question = Question.objects.get(id=id)
 
@@ -331,7 +316,7 @@ def create_option(request, id):
 #==========================================================
 
 def edit_question(request, id):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -343,7 +328,7 @@ def edit_question(request, id):
     return redirect ('/')
 
 def update_question(request, id):
-    if(request.method=="POST"):
+    if request.method=="POST":
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -375,7 +360,7 @@ def update_question(request, id):
 #==========================================================
 
 def edit_option(request, id):
-    if(request.method=="GET"): 
+    if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -387,7 +372,7 @@ def edit_option(request, id):
     return redirect ('/')
 
 def update_option(request, id):
-    if(request.method=="POST"):
+    if request.method=="POST":
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -415,7 +400,7 @@ def update_option(request, id):
 #==========================================================
 
 def delete_question(request, id):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")
@@ -426,7 +411,7 @@ def delete_question(request, id):
     return redirect ('/')
 
 def delete_option(request, id):
-    if(request.method=="POST"): 
+    if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect ("/")

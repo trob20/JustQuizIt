@@ -9,6 +9,13 @@ urlpatterns = [
 
     path('dashboard', views.dashboard),
 
+    path('quiz/take_quiz/<int:id>', views.take_quiz),
+    path('quiz/grade_quiz/<int:id>', views.grade_quiz),
+    path('quiz/results/<int:id>', views.results),
+
+    path('quiz/display_quiz', views.display_quiz),
+    path('quiz/create_quiz', views.create_quiz),
+
     path('question/display_question', views.display_question),
     path('question/display_option/<int:id>', views.display_option),
 
@@ -24,11 +31,6 @@ urlpatterns = [
     path('question/delete_question/<int:id>', views.delete_question),
     path('question/delete_option/<int:id>', views.delete_option),  
 
-    path('quiz/display_quiz', views.display_quiz),
-    path('quiz/create_quiz', views.create_quiz),
 
-    path('quiz/take_quiz/<int:id>', views.take_quiz),
-    path('quiz/grade_quiz/<int:id>', views.grade_quiz),
-    path('quiz/results/<int:id>', views.results),
 
 ]
