@@ -119,17 +119,22 @@ def grade_quiz(request, id):
 
         user = User.objects.get(id=request.session["u_id"])
         quiz = Quiz.objects.get(id=id)
-        quiz_history = QuizHistory.objects.create(quiz_taken_by=user, quiz_taken=quiz)
+
+        result = QuizResult.objects.create(
+            quiz_taken_by=user, 
+            related_quiz=quiz
+        )
 
         answers = request.POST.getlist("answers_selected")
         for answer in answers:
+            answer_selected = AnswerOption.objects.get(id=request.POST['answer_id'])
+            related_question = Question.objects.get(id=request.POST['question_id'])
             AnswerSelected.objects.create(
-                answer_id = answer, 
-                correct = request.POST['correct'], 
-                related_question = request.POST['question_id'Question.objects.get(id=id)], 
-                quiz_history = quiz_history
+                answer_selected = answer_selected, 
+                related_question = related_question, 
+                related_result = result
             )
-        return redirect('quiz/results/' + str(quiz_history.id))
+        return redirect('quiz/results/' + str(quiz_result.id))
 
     return redirect ("/")
 
@@ -145,13 +150,29 @@ def results(request, id):
             return redirect ("/")
 
         user = User.objects.get(id=request.session["u_id"])
-        result = QuizHistory.objects.get(id=id)
+        result = QuizResult.objects.get(id=id)
+
+        #question_count = Question.objects.filter(username='myname', status=0).count()
+
+        # correct_answer  = result.quiz_answers.related_question.answer_options (find option with correct = True)
+        # answer_selected = result.quiz_answers.answer_selected.correct
+
+
+        # if correct_answer == answer_selected:
+        #     correct = true
+        #     correct_count++
+        # else:
+        #     correct = false
+        #     incorrect_count++
+
+        # score = correct_count / question_count
+
 
         context = {
             "first_name": user.first_name,
             "result": result
         }
-        return render(request, "add_question.html", context)
+        return render(request, "results.html", context)
 
     return redirect ("/")
 

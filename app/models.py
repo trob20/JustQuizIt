@@ -43,7 +43,7 @@ class User(models.Model):
     
     # quizzes_created - one-to-many
     # questions_created - one-to-many
-    # quizzes_taken - one-to-many
+    # quiz_results - one-to-many
 
 
 class QuizManager(models.Manager):
@@ -63,7 +63,7 @@ class Quiz(models.Model):
     objects = QuizManager()
 
     # questions - many-to-many
-    # quizzes_taken - many-to-many
+    # quiz_taken - many-to-many
 
 
 class QuestionManager(models.Manager):
@@ -93,36 +93,38 @@ class Question(models.Model):
     objects = QuestionManager()
 
     # answer_options - one-to-many
+    # question_answered - one-to-one
 
 
 class AnswerOption(models.Model):
     answer_option = models.CharField(max_length=255)
-    correct = models.BooleanField()
+    correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
 
+    # answer_selected - one-to-one
 
 #==========================================================
 # Results
 #==========================================================
 
-class QuizHistory(models.Model):
+class QuizResult(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    quiz_taken_by = models.ForeignKey(User, related_name = "quiz_history", on_delete=models.CASCADE)
-    quiz_taken = models.ManyToManyField(Quiz, related_name = "quizzes_taken")
+    quiz_taken_by = models.ForeignKey(User, related_name = "quiz_results", on_delete=models.CASCADE)
+    related_quiz = models.ManyToManyField(Quiz, related_name = "quiz_taken")
 
     # quiz_answers - one-to-many
 
 
 class AnswerSelected(models.Model):
-    answer_id = models.IntegerField()
-    correct = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    quiz_history = models.ForeignKey(QuizHistory, related_name = "quiz_answers", on_delete=models.CASCADE)   
-    related_question = models.ForeignKey(Question, related_name = "question_answers", on_delete=models.CASCADE)
+    answer_selected = models.OneToOneField(AnswerOption, related_name = "answer_selected", on_delete=models.CASCADE)
+    related_question = models.OneToOneField(Question, related_name = "question_answered", on_delete=models.CASCADE)
+    related_result = models.ForeignKey(QuizResult, related_name = "quiz_answers", on_delete=models.CASCADE) 
+
 
 #==========================================================
 # Dropdowns
