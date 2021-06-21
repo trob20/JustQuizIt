@@ -4,7 +4,6 @@
 {% include "navbar.html" %}
 
 <h1 class="header">Create Quiz</h1>
-
 <form action="/quiz/create_quiz" method="POST">
     {% csrf_token %}
     <div class="form-group row">
@@ -36,7 +35,13 @@
         {% for question in questions %}
             <tbody>
                 <tr>
-                    <td><a class="linkUnderline" href="/question/edit_question/{{ question.id }}">{{ question.id }}</a></td>
+                    <td>
+                        {% if quiz.created_by.id == u_id %} 
+                            <a class="linkUnderline" href="/question/edit_question/{{ question.id }}">{{ question.id }}</a>
+                        {% else %}
+                            {{ question.id }}
+                        {% endif %}
+                    </td>
                     <td>{{ question.source }}</td>
                     <td>{{ question.technology }}</td>
                     <td>{{ question.domain }}</td>

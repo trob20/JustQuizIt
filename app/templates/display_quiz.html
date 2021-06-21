@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}Create Quiz{% endblock %}
+{% block title %}Display Quiz{% endblock %}
 {% block content %}
 {% include "navbar.html" %}
 
 <h1 class="header">{{ quiz.name }}</h1>
-<a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/dashboard" role="button">Cancel</a>
-<a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/quiz/edit_quiz/{{ quiz.id }}" role="button">Edit Quiz</a>
-
+<a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/dashboard" role="button">Back</a>
+{% if quiz.created_by.id == u_id %} 
+    <a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/quiz/edit_quiz/{{ quiz.id }}" role="button">Edit Quiz</a>
+{% endif %}
     <h3>Quiz Questions</h3>
     <table class="table table-striped">
         <thead>

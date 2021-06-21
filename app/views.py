@@ -67,7 +67,6 @@ def logout(request):
 # Dashboard
 #==========================================================
 
-
 def dashboard(request):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
@@ -258,27 +257,6 @@ def display_one_result(request, id):
 
     return redirect("/")
 
-
-
-def display_all_results(request):
-    if request.method=="GET": 
-        sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect("/")
-
-        user = User.objects.get(id=request.session["u_id"])
-        result = QuizResult.objects.get(id=id)
-
-        context = {
-            "first_name": user.first_name,
-            "result": result
-        }
-        return render(request, "display_results.html", context)
-
-    return redirect("/")
-
-
-
 #==========================================================
 # Quiz
 #==========================================================
@@ -295,7 +273,8 @@ def new_quiz(request):
 
         context = {
             "first_name": user.first_name,
-            "questions": questions
+            "questions": questions,
+            "u_id": request.session["u_id"]
         }
         return render(request, "new_quiz.html", context)
 
@@ -307,12 +286,6 @@ def create_quiz(request):
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
             return redirect("/")
-
-        # errors = Quiz.objects.basic_validator(request.POST)
-        # if len(errors) > 0:
-        #     for key, value in errors.items():
-        #         messages.error(request, value)
-        #     return redirect('/quiz/display_quiz')
 
         user = User.objects.get(id=request.session["u_id"])
         
@@ -339,6 +312,7 @@ def display_quiz(request, id):
         context= {
             "first_name": user.first_name,
             "quiz": Quiz.objects.get(id=id),
+            "u_id": request.session["u_id"]
         }
         return render(request, "display_quiz.html", context)
     return redirect('/')
@@ -408,7 +382,8 @@ def question_bank(request):
 
         context = {
             "first_name": user.first_name,
-            "questions": questions
+            "questions": questions,
+            "u_id": request.session["u_id"]
         }
         return render(request, "question_bank.html", context)
 

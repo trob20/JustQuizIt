@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Create Quiz{% endblock %}
+{% block title %}Edit Quiz{% endblock %}
 {% block content %}
 {% include "navbar.html" %}
 
@@ -14,7 +14,7 @@
         </div>
 
         <button class="col-sm-1 btn btn-primary float-right btn_spacer" type="submit">Update</button>
-        <a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/dashboard" role="button">Cancel</a>
+        <a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/dashboard" role="button">Back</a>
         <button class="col-sm-1 btn btn-danger float-right btn_spacer" type="submit" formaction="/quiz/delete_quiz/{{ quiz.id }}">Delete</button>
     </div>
 
