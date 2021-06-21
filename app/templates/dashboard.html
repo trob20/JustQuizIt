@@ -42,7 +42,7 @@
         {% for result in quizzes_taken %}
         <tbody>
             <tr>
-                <td>{{ result.quiz_id }}</td>
+                <td><a class="linkUnderline" href="/quiz/display_quiz/{{ result.quiz_result_id }}">{{ result.quiz_id }}</a></td>
                 <td><a class="linkUnderline" href="/exam/display_result/{{ result.quiz_result_id }}">{{ result.quiz_name }}</a></td>
                 <td>{{ result.date_completed }}</td>
                 <td>{{ result.score }}</td>
@@ -67,7 +67,7 @@
     {% for quiz in quizzes %}
         <tbody>
             <tr>
-                <td>{{ quiz.id }}</td>
+                <td><a class="linkUnderline" href="/quiz/display_quiz/{{ quiz.id }}">{{ quiz.id }}</a></td>
                 <td>{{ quiz.name }}</td>
                 <td>{{ quiz.questions.first.source }}</td>
                 <td>

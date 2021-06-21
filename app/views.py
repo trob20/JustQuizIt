@@ -328,6 +328,22 @@ def create_quiz(request):
         return redirect('/quiz/edit_quiz/'+ str(quiz.id))
     return redirect('/')
 
+def display_quiz(request, id):
+    if request.method=="GET": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+
+        context= {
+            "first_name": user.first_name,
+            "quiz": Quiz.objects.get(id=id),
+        }
+        return render(request, "display_quiz.html", context)
+    return redirect('/')
+
+
 def edit_quiz(request, id):
     if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
@@ -350,16 +366,14 @@ def update_quiz(request, id):
         if sessionTest == 'no u_id': 
             return redirect("/")
 
-        errors = Quiz.objects.basic_validator(request.POST)
-        if len(errors) > 0:
-            for key, value in errors.items():
-                messages.error(request, value)
-            return redirect('/quiz/edit/'+ str(id))
-
         quiz = Quiz.objects.get(id=id)
-        quiz.name=request.POST['name']
-        quiz.created_by=request.POST['u_id']
-        question.save()
+
+        quiz.name=request.POST['quiz_name']
+        quiz.save()
+
+        questions_removed = request.POST.getlist("remove")
+        for question in questions_removed:
+            quiz.questions.delete(question)
 
         return redirect('/quiz/edit/'+ str(id))
     return redirect('/')

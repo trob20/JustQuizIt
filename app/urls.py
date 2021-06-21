@@ -15,7 +15,8 @@ urlpatterns = [
     path('exam/display_results', views.display_all_results),
 
     path('quiz/new_quiz', views.new_quiz),
-    path('quiz/create_quiz', views.create_quiz),  
+    path('quiz/create_quiz', views.create_quiz), 
+    path('quiz/display_quiz/<int:id>', views.display_quiz), 
     path('quiz/edit_quiz/<int:id>', views.edit_quiz),
     path('quiz/update_quiz/<int:id>', views.update_quiz),
     path('quiz/delete_quiz/<int:id>', views.delete_quiz),

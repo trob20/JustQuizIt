@@ -5,17 +5,17 @@
 
 <h1 class="header">Edit Quiz</h1>
 
-<form action="/quiz/update_quiz/ {{ quiz.id }}" method="POST">
+<form action="/quiz/update_quiz/{{ quiz.id }}" method="POST">
     {% csrf_token %}
     <div class="form-group row">
         <label class="col-sm-2 col-form-label">Quiz Name</label>
         <div class="col-sm-3">
             <input class="form-control" type="text" name="quiz_name" minlength='3' value= "{{ quiz.name }}"  required/>
         </div>
-        <label class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-3">
-            <button class="btn btn-primary" type="submit">Sumbit Edits</button>
-        </div>
+
+        <button class="col-sm-1 btn btn-primary float-right btn_spacer" type="submit">Update</button>
+        <a class="col-sm-1 btn btn-primary float-right btn_spacer" href="/dashboard" role="button">Cancel</a>
+        <button class="col-sm-1 btn btn-danger float-right btn_spacer" type="submit" formaction="/quiz/delete_quiz/{{ quiz.id }}">Delete</button>
     </div>
 
     <br/>
@@ -42,7 +42,7 @@
                     <td>{{ question.domain }}</td>
                     <td>{{ question.question_text}}</td>
                     <td>
-                        <input class="checkbox_spacer" type="checkbox" name="add" value="{{ question.id }}">
+                        <input class="checkbox_spacer" type="checkbox" name="remove" value="{{ question.id }}">
                     </td>
                 </tr>
                 </tbody>
