@@ -1,38 +1,17 @@
 {% extends 'base.html' %}
-
 {% block title %}Edit Question{% endblock %}
-
 {% block content %}
-
-
-<nav class="navbar">
-    <div class="container-fluid">
-        <p class="navbar-brand">JustQuizIt</p>
-
-        <div class="d-flex">
-            <p class="nav-item">Welcome {{ first_name }}!</p>
-            <form action="/dashboard" method="GET">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
-            </form>
-
-            <form action="/logout" method="POST">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
-            </form>
-        </div>
-    </div>
-</nav>
+{% include "navbar.html" %}
 
 <h1 class="header">Edit Question</h1>
 
-    <form action="/question/create_question" method="POST">
+    <form action="/question/update_question/{{ question.id }}" method="POST">
         {% csrf_token %}
 
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Technology</label>
-            <div class="col-sm-6">
-                <input class="form-control" type="text" name="technology" value={{ question.technology }} />
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="technology" value="{{ question.technology }}" />
             </div>
         </div>
 
@@ -40,40 +19,61 @@
             <label class="col-sm-2 col-form-label">Domain</label>
             <div class="col-sm-6">
                 <select name="domain">
-                        <option disabled selected value="none"></option>
                     {% for domain in domains %}
-                        <option value="{{ domain.name }}">{{ domain.name }}</option>  
+                        <option 
+                            class="form-control" 
+                            value="{{ domain.name }}"
+                            {% if domain.name == question.domain %} selected="selected" {% endif %}>
+                            {{ domain.name }}</option>  
                     {% endfor %}
-                </select>
+            </select>
                 <input type='hidden' name="domain.id" value="{{domain.id}}" />
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label class="col-sm-2 col-form-label">Question Type</label>
-            <div class="col-sm-6">
-                <select name="question_type">
-                    <option disabled selected value="none"></option>
-                    {% for type in question_types %}
-                        <option value="{{ type.name }}">{{ type.name }}</option>  
-                    {% endfor %}
-                </select>
-                <input type='hidden' name="type.id" value="{{type.id}}" />
-            </div>
-        </div>
-
-        <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Question Text</label>
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                 <textarea class="form-control" type="textField" rows="2" name="question_text"> {{ question.question_text }} </textarea>
             </div>
         </div>
 
         <div class="col-sm-8">
-            <button class="btn btn-success float-right" type="submit">Update</button>
-            <button class="btn btn-success float-right" type="button">Cancel</button>
+            <button class="col-sm-2 btn btn-danger float-right btn_spacer" type="submit" formaction="/question/delete_question/{{ question.id }}">Delete</button>
+            <a class="col-sm-2 btn btn-primary float-right btn_spacer" href="/question/question_bank" role="button">Cancel</a>
+            <button class="col-sm-2 btn btn-primary float-right btn_spacer" type="submit">Update</button>
+            
         </div>
+        
     </form>
+
+    <br/><br/><br/>
+
+    <div>
+        <h3>Answer Options</h3>
+        <a class="col-sm-2 btn btn-primary" href="/option/new_option/{{ question.id }}" role="button">Add Options</a>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width: 10%">Option ID</th>
+                <th style="width: 80%">Option</th>
+                <th style="width: 10%">Correct</th>
+            </tr>
+        </thead>
+
+        {% for option in question.answer_options.all %}
+        <tbody>
+            <tr>
+                <td><a class="linkUnderline" href="/option/edit_option/{{ option.id }}/{{ q_id }}">{{ option.id }}</a></td>
+                <td>{{ option.answer_option }}</td>
+                <td>{{ option.correct }}</td>
+            </tr>
+        </tbody>
+    {% endfor %}
+
+</table>
 
 
 

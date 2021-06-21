@@ -41,6 +41,7 @@
 .navbar-brand {
 	font-size: 30px;
 	font-weight: 600;
+	padding-left: 10px;
 }
 .btnAsLink {
 	background: none!important;
@@ -98,6 +99,29 @@
 .green {
 	background-color: #bef7ce;
 }
+
+.not-visible {
+    display: none;
+}
+
+/* ============== */
+/* Quiz Results   */
+/* ============== */
+
+.color_correct {
+	background-color: #b8fca9;
+}
+
+.color_incorrect {
+	background-color: #fabebe;
+}
+.result_spacer {
+	margin-left: 20px;
+}
+.result_span {
+	margin-left: 50%;
+}
+
 /* ============== */
 /* Create Quiz    */
 /* ============== */
@@ -142,17 +166,9 @@
 .edit_btn {
     margin-left: 50%;
 }
-
-
-
-
-
 .spacer_left {
 	margin-left: 50px;
 }
-
-
-
 .input_format {
 	width: auto;
 	font-size: 25px;
@@ -167,5 +183,7 @@ hr {
 }
 ul {
 	list-style-type: none;
-
+}
+.btn_spacer {
+	margin-left: 25px  !important;
 }

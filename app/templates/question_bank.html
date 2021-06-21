@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Question Bank{% endblock %}
+{% block content %}
+{% include "navbar.html" %}
+
+<h1 class="header">Question Bank</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 5%">ID</th>
+            <th style="width: 10%">Source</th>
+            <th style="width: 10%">Technology</th>
+            <th style="width: 10%">Domain</th>
+            <th style="width: 35%">Question Text</th> 
+        </tr>
+    </thead>
+
+    {% for question in questions %}
+        <tbody>
+            <tr>
+                <td><a class="linkUnderline" href="/question/edit_question/{{ question.id }}">{{ question.id }}</a></td>
+                <td>{{ question.source }}</td>
+                <td>{{ question.technology }}</td>
+                <td>{{ question.domain }}</td>
+                <td>{{ question.question_text}}</td>
+
+            </tr>
+            </tbody>
+    {% endfor %}
+    
+</table>
+
+{% endblock %}

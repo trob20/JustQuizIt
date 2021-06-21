@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import *
 import bcrypt
+from django.core.exceptions import ObjectDoesNotExist
 
 
 #==========================================================
@@ -42,7 +43,7 @@ def login(request):
         user = User.objects.filter(email=email)
         if not user:
             messages.error(request, "Invalid credentials")
-            return redirect ("/")
+            return redirect("/")
 
         logged_in_user = user[0]
 
@@ -51,15 +52,15 @@ def login(request):
             return redirect("/dashboard")
         else:
             messages.error(request, "Invalid credentials")
-            return redirect ("/")
-    return redirect ("/")
+            return redirect("/")
+    return redirect("/")
 
 
 def logout(request):
     if request.method=="POST": 
         del request.session["u_id"]
         request.session.clear()
-    return redirect ("/")
+    return redirect("/")
 
 
 #==========================================================
@@ -71,125 +72,223 @@ def dashboard(request):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/")
+            return redirect("/")
+        u_id = request.session["u_id"]
+        user = User.objects.get(id=u_id)
+        quizzes = Quiz.objects.all()
 
-        user = User.objects.get(id=request.session["u_id"])
-        quizzes = Quiz.objects.all()     
+        results = QuizResult.objects.filter(quiz_taken_by = u_id)
+        print("***** results *****", results)
+
+        quizzes_taken = []
+        for result in results.all():
+            quiz_result_id = result.id
+            for quiz in result.related_quiz.all():
+                quiz_id = quiz.id
+                quiz_name = quiz.name
+                items = {
+                    "quiz_id": quiz_id,
+                    "quiz_name": quiz_name,
+                    "date_completed": result.updated_at,
+                    "score": result.score,
+                    "quiz_result_id": quiz_result_id
+                }
+                quizzes_taken.append(items)
+                print("***** quizzes_taken *****", quizzes_taken)
 
         context = {
             "u_id": u_id,
             "first_name": user.first_name,
-            "quizzes": quizzes
+            "quizzes": quizzes,
+            "results": results,
+            "quizzes_taken": quizzes_taken
+ 
         }
         return render(request, "dashboard.html", context)
-    return redirect ("/")
+    return redirect("/")
 
 
 #==========================================================
-# Take Quiz
+# Exam
 #==========================================================
 
 def take_quiz(request, id):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/")
+            return redirect("/")
 
         user = User.objects.get(id=request.session["u_id"])
         quiz = Quiz.objects.get(id=id)
 
         context = {
             "first_name": user.first_name,
+            "quiz_id": quiz.id,
             "quiz": quiz
         }
         return render(request, "take_quiz.html", context)
 
-    return redirect ("/")
+    return redirect("/")
 
 
-#==========================================================
-# Grade Quiz
-#==========================================================
-
-def grade_quiz(request, id):
+def score_quiz(request, id):
     if request.method=="POST": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/")
+            return redirect("/")
 
         user = User.objects.get(id=request.session["u_id"])
+
+        # get Quiz object
         quiz = Quiz.objects.get(id=id)
+        # create Quiz_Result object
+        quiz_result = QuizResult.objects.create( quiz_taken_by=user )
+        # add Quiz object to QuizResult object
+        quiz_result.related_quiz.add(quiz)
 
-        result = QuizResult.objects.create(
-            quiz_taken_by=user, 
-            related_quiz=quiz
-        )
+        for key, value in request.POST.items():
+            # key = question id, value = answer_option id
 
-        answers = request.POST.getlist("answers_selected")
-        for answer in answers:
-            answer_selected = AnswerOption.objects.get(id=request.POST['answer_id'])
-            related_question = Question.objects.get(id=request.POST['question_id'])
-            AnswerSelected.objects.create(
-                answer_selected = answer_selected, 
-                related_question = related_question, 
-                related_result = result
-            )
-        return redirect('quiz/results/' + str(quiz_result.id))
+            # skip csrf key/value pair
+            csrf = "csrf"
+            if csrf in key:
+                continue
 
-    return redirect ("/")
+            # get Question object
+            question = Question.objects.get(id=key)
+            # get AnswerOption object
+            answer_option = AnswerOption.objects.get(id=value)
+            # create Answer_Selected object
+            answer_selected = AnswerSelected.objects.create( answer=value, related_result=quiz_result, related_question=question, related_answer_option=answer_option )
+
+            # print("value: ", value)
+            # print("option: ", answer_option.id)
+            # print("correct: ", answer_option.correct)
+
+            if answer_option.correct == True:
+                answer_selected.correct = True
+                answer_selected.save()
+            else:
+                answer_selected.correct = False
+                answer_selected.save()
+            
+        num_questions = quiz.questions.count()
+        num_correct = QuizResult.objects.filter(quiz_answers__correct = True, id=quiz_result.id).count()
+
+        score = round(num_correct / num_questions * 100)
+        quiz_result.score = score
+        quiz_result.save()
+        # print("quiz_result.score: ", quiz_result.score)
+        # print("num_questions: ", num_questions, "num_correct: ", num_correct, "quiz_result.score: ", quiz_result.score)
+
+        return redirect('/exam/display_result/' + str(quiz_result.id))
+
+    return redirect("/")
 
 
-#==========================================================
-# Results
-#==========================================================
-
-def results(request, id):
+def display_one_result(request, id):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/")
+            return redirect("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        quiz_result = QuizResult.objects.get(id=id)
+        quiz_id = quiz_result.related_quiz.first().id
+        quiz = Quiz.objects.get(id=quiz_id)
+        
+        questions = []      
+        for question in quiz.questions.all():
+            question_id = question.id
+            questionObject = Question.objects.get(id=question_id)
+            answer_selected_id = 0
+            quiz_result_query_set = questionObject.question_answered.all().filter(related_result = quiz_result.id)
+            for record in quiz_result_query_set:
+                answer_selected_id = record.id
+
+            try:
+                answer_selected_object = AnswerSelected.objects.get(id=answer_selected_id)
+                selected_option_id = answer_selected_object.answer
+            except ObjectDoesNotExist:
+                selected_option_id = 0
+
+            answer_options = []
+            for option in question.answer_options.all():
+
+                answer_result = ""
+                answer_color = ""
+                if option.correct == True and option.id == selected_option_id:
+                    answer_result = "Your answer / Correct!"
+                    answer_color = "Both"
+                elif option.correct == True and option.id != selected_option_id: 
+                        answer_result = "Correct answer"
+                        answer_color = "Correct"
+                elif option.correct == False and option.id == selected_option_id: 
+                        answer_result = "Your answer"
+                        answer_color = "Incorrect"
+
+                result = {
+                    "answer_option": option.answer_option,
+                    "answer_result": answer_result,
+                    "answer_color": answer_color
+                }
+                answer_options.append(result)
+
+                # print("****** START ******")
+                # print("option.correct", option.correct)
+                # print("option.id", option.id)
+                # print("selected_option_id", selected_option_id)
+                # print("answer_result", answer_result)
+                
+            question_set = {
+                "question_text": question.question_text,
+                "answer_options": answer_options
+            }
+            questions.append(question_set)
+
+        # print("***** QUESTIONS *****", questions)
+        context = {
+            "first_name": user.first_name,
+            "score": quiz_result.score,
+            "quiz_id": quiz.id,
+            "quiz_name": quiz.name,
+            "questions": questions
+        }
+        return render(request, "quiz_result.html", context)
+
+    return redirect("/")
+
+
+
+def display_all_results(request):
+    if request.method=="GET": 
+        sessionTest = request.session.get("u_id", "no u_id")
+        if sessionTest == "no u_id": 
+            return redirect("/")
 
         user = User.objects.get(id=request.session["u_id"])
         result = QuizResult.objects.get(id=id)
-
-        #question_count = Question.objects.filter(username='myname', status=0).count()
-
-        # correct_answer  = result.quiz_answers.related_question.answer_options (find option with correct = True)
-        # answer_selected = result.quiz_answers.answer_selected.correct
-
-
-        # if correct_answer == answer_selected:
-        #     correct = true
-        #     correct_count++
-        # else:
-        #     correct = false
-        #     incorrect_count++
-
-        # score = correct_count / question_count
-
 
         context = {
             "first_name": user.first_name,
             "result": result
         }
-        return render(request, "results.html", context)
+        return render(request, "display_results.html", context)
 
-    return redirect ("/")
+    return redirect("/")
 
 
 
 #==========================================================
-# Display Quiz
+# Quiz
 #==========================================================
 
-
-def display_quiz(request):
+def new_quiz(request):
     if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
-        u_id = request.session["u_id"]
         user = User.objects.get(id=u_id)
         
         questions = Question.objects.all()  
@@ -198,19 +297,16 @@ def display_quiz(request):
             "first_name": user.first_name,
             "questions": questions
         }
-        return render(request, "create_quiz.html", context)
+        return render(request, "new_quiz.html", context)
 
-    return redirect ('/')
+    return redirect('/')
 
-#==========================================================
-# Create Quiz
-#==========================================================
 
 def create_quiz(request):
     if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
         # errors = Quiz.objects.basic_validator(request.POST)
         # if len(errors) > 0:
@@ -219,46 +315,113 @@ def create_quiz(request):
         #     return redirect('/quiz/display_quiz')
 
         user = User.objects.get(id=request.session["u_id"])
-
-        Quiz.objects.create(
-            source=user.first_name, 
-            technology=request.POST['technology'], 
-            domain=request.POST['domain'], 
-            question_type=request.POST['question_type'], 
-            question_text=request.POST['question_text'], 
-            question_created_by=user
+        
+        quiz = Quiz.objects.create(
+            name=request.POST["quiz_name"], 
+            created_by=user
         )
-        questionId = Question.objects.last().id
-        return redirect ('/question/display_option/'+ str(questionId))
-    return redirect ('/')
+
+        questions_added = request.POST.getlist("add")
+        for question in questions_added:
+            quiz.questions.add(question)
+
+        return redirect('/quiz/edit_quiz/'+ str(quiz.id))
+    return redirect('/')
+
+def edit_quiz(request, id):
+    if request.method=="GET": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        u_id = request.session["u_id"]
+
+        context= {
+            "first_name": user.first_name,
+            "quiz": Quiz.objects.get(id=id),
+        }
+        return render(request, "edit_quiz.html", context)
+    return redirect('/')
+
+
+def update_quiz(request, id):
+    if request.method=="POST":
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        errors = Quiz.objects.basic_validator(request.POST)
+        if len(errors) > 0:
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/quiz/edit/'+ str(id))
+
+        quiz = Quiz.objects.get(id=id)
+        quiz.name=request.POST['name']
+        quiz.created_by=request.POST['u_id']
+        question.save()
+
+        return redirect('/quiz/edit/'+ str(id))
+    return redirect('/')
+
+
+def delete_quiz(request, id):
+    if request.method=="POST": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        quiz = Quiz.objects.get(id=id)
+        quiz.delete()
+
+        return redirect('/dashboard')
+    return redirect('/')
+
 
 
 #==========================================================
-# Create Question
+# Questions
 #==========================================================
 
-def display_question(request):
+def question_bank(request):
+    if request.method=="GET": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        questions = Question.objects.all()  
+
+        context = {
+            "first_name": user.first_name,
+            "questions": questions
+        }
+        return render(request, "question_bank.html", context)
+
+    return redirect('/')
+
+def new_question(request):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
-        if sessionTest == "no u_id": 
-            return redirect ("/")
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        user = User.objects.get(id=request.session["u_id"])
 
         domain = Domain.objects.all()
-        question_type = QuestionType.objects.all()
         context = {
+            "first_name": user.first_name,
             "domains": domain,
-            "question_types": question_type
         }
-        return render(request, "add_question.html", context)
-
-    return redirect ("/")
+        return render(request, "new_question.html", context)
+    return redirect("/")
 
 
 def create_question(request):
     if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
         # errors = Question.objects.basic_validator(request.POST)
         # if len(errors) > 0:
@@ -268,49 +431,102 @@ def create_question(request):
 
         user = User.objects.get(id=request.session["u_id"])
 
-        Question.objects.create(
-            source_name=user.first_name, 
+        question = Question.objects.create(
+            source=user.first_name, 
             technology=request.POST['technology'], 
             domain=request.POST['domain'], 
-            question_type=request.POST['question_type'], 
             question_text=request.POST['question_text'], 
             question_created_by=user
         )
-        questionId = Question.objects.last().id
-        return redirect ('/question/display_option/'+ str(id))
-    return redirect ('/')
+        
+        return redirect('/question/edit_question/'+ str(question.id))
+    return redirect('/')
 
 
+def edit_question(request, id):
+    if request.method=="GET": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        user = User.objects.get(id=request.session["u_id"])
+        question = Question.objects.get(id=id)
+        domain = Domain.objects.all()
+
+        context= {
+            "first_name": user.first_name,
+            "question": question,
+            "domains": domain, 
+            "q_id": question.id
+        }
+        return render(request, "edit_question.html", context)
+    return redirect('/')
+
+
+def update_question(request, id):
+    if request.method=="POST":
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        # errors = Question.objects.basic_validator(request.POST)
+        # if len(errors) > 0:
+        #     for key, value in errors.items():
+        #         messages.error(request, value)
+        #     return redirect('/question/edit/'+ str(id))
+
+        user = User.objects.get(id=request.session["u_id"])
+
+        question = Question.objects.get(id=id)
+        question.source=user.first_name
+        question.technology=request.POST['technology']
+        question.domain=request.POST['domain']
+        question.question_text=request.POST['question_text']
+        question.save()
+
+        return redirect('/question/question_bank')
+    return redirect('/')
+
+
+def delete_question(request, id):
+    if request.method=="POST": 
+        sessionTest = request.session.get('u_id', 'no u_id')
+        if sessionTest == 'no u_id': 
+            return redirect("/")
+
+        question = Question.objects.get(id=id)
+        question.delete()
+        return redirect('/question/question_bank')
+    return redirect('/')
 
 
 
 #==========================================================
-# Create Answer Options
+# Answer Options
 #==========================================================
 
-
-def display_option(request, id):
+def new_option(request, id):
     if request.method=="GET": 
         sessionTest = request.session.get("u_id", "no u_id")
         if sessionTest == "no u_id": 
-            return redirect ("/")
+            return redirect("/")
 
-        correct = Correct.objects.all()
+        user = User.objects.get(id=request.session["u_id"])
         question = Question.objects.get(id=id)
 
         context = {
-            "correct": correct,
+            "first_name": user.first_name,
             "question": question
         }
-        return render(request, "add_option.html", context)
-    return redirect ("/")
+        return render(request, "new_option.html", context)
+    return redirect("/")
 
 
 def create_option(request, id):
     if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
         # errors = AnswerOption.objects.basic_validator(request.POST)
         # if len(errors) > 0:
@@ -320,124 +536,82 @@ def create_option(request, id):
 
         question = Question.objects.get(id=id)
 
-        AnswerOption.objects.create(
+        correct_selected = False
+        correct_option = request.POST.getlist("correct")
+
+        for correct in correct_option:
+            if request.POST['correct'] is None:
+                correct_selected = False
+            else:
+                correct_selected = True
+
+        option = AnswerOption.objects.create(
             answer_option=request.POST['answer_option'], 
-            answer =request.POST['answer'], 
+            correct = correct_selected,
+            related_question = question
         )
-        option = AnswerOption.objects.last()
-        option.related_question = question
-
-        return redirect ('/dashboard')
-    return redirect ('/')
+        return redirect('/question/edit_question/' + str(id))
+    return redirect('/')
 
 
-
-#==========================================================
-# Edit Question
-#==========================================================
-
-def edit_question(request, id):
+def edit_option(request, id, q_id):
     if request.method=="GET": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
+        
+        user = User.objects.get(id=request.session["u_id"])
+        question = Question.objects.get(id=q_id)
 
         context= {
-            "question": Question.objects.get(id=id),
-        }
-        return render(request, "edit_question.html", context)
-    return redirect ('/')
-
-def update_question(request, id):
-    if request.method=="POST":
-        sessionTest = request.session.get('u_id', 'no u_id')
-        if sessionTest == 'no u_id': 
-            return redirect ("/")
-
-        errors = Question.objects.basic_validator(request.POST)
-        if len(errors) > 0:
-            for key, value in errors.items():
-                messages.error(request, value)
-            return redirect ('/question/edit/'+ str(id))
-
-        question = Question.objects.get(id=id)
-        question.source=request.POST['source']
-        question.source_name=request.POST['source_name']
-        question.technology=request.POST['technology']
-        question.domain=request.POST['domain']
-        question.question_type=request.POST['question_type']
-        question.question_text=request.POST['question_text']
-        question.question_created_by.id['user_id']
-        question.save()
-
-        return redirect ('/question/edit/'+ str(id))
-    return redirect ('/')
-
-
-
-
-#==========================================================
-# Edit Answer Option
-#==========================================================
-
-def edit_option(request, id):
-    if request.method=="GET": 
-        sessionTest = request.session.get('u_id', 'no u_id')
-        if sessionTest == 'no u_id': 
-            return redirect ("/")
-
-        context= {
+            "first_name": user.first_name,
             "option": AnswerOption.objects.get(id=id),
+            "question": question,
+            "q_id": question.id
         }
         return render(request, "edit_option.html", context)
-    return redirect ('/')
+    return redirect('/')
 
-def update_option(request, id):
+
+def update_option(request, id, q_id):
     if request.method=="POST":
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
-        errors = AnswerOption.objects.basic_validator(request.POST)
-        if len(errors) > 0:
-            for key, value in errors.items():
-                messages.error(request, value)
-            return redirect ('/option/edit/'+ str(id))
+        # errors = AnswerOption.objects.basic_validator(request.POST)
+        # if len(errors) > 0:
+        #     for key, value in errors.items():
+        #         messages.error(request, value)
+        #     return redirect('/option/edit/'+ str(id))
+
+        question = Question.objects.get(id=q_id)
+
+        correct_selected = False
+        correct_option = request.POST.getlist("correct")
+
+        for correct in correct_option:
+            if request.POST['correct'] is None:
+                correct_selected = False
+            else:
+                correct_selected = True
 
         option = AnswerOption.objects.get(id=id)
-        option.answer_option=request.POST['answer_option']
-        option.answer=request.POST['answer']
+        option.answer_option = request.POST['answer_option']
+        option.correct = correct_selected
         option.save()
 
-        return redirect ('/option/edit/'+ str(id))
-    return redirect ('/')
+        return redirect('/question/edit_question/' + str(q_id))
+    return redirect('/')
 
 
-
-
-
-#==========================================================
-# Delete Question, Answer Options
-#==========================================================
-
-def delete_question(request, id):
+def delete_option(request, id, q_id):
     if request.method=="POST": 
         sessionTest = request.session.get('u_id', 'no u_id')
         if sessionTest == 'no u_id': 
-            return redirect ("/")
-
-        question = Question.objects.get(id=id)
-        question.delete()
-        return redirect ('/dashboard')
-    return redirect ('/')
-
-def delete_option(request, id):
-    if request.method=="POST": 
-        sessionTest = request.session.get('u_id', 'no u_id')
-        if sessionTest == 'no u_id': 
-            return redirect ("/")
+            return redirect("/")
 
         option = AnswerOption.objects.get(id=id)
         option.delete()
-        return redirect ('/dashboard')
-    return redirect ('/')
+        return redirect('/question/edit_question/' + str(q_id))
+    return redirect('/')

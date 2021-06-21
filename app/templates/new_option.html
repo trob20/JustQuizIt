@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Edit Answer Options{% endblock %}
+{% block title %}Answer Options{% endblock %}
 {% block content %}
 {% include "navbar.html" %}
 
-<h1 class="header">Edit Answer Options</h1>
+<h1 class="header">Add Answer Option</h1>
 
 <div class="mb-3 row">
     <label class="col-sm-2">Related Question</label>
@@ -13,7 +13,7 @@
 </div>
 
 
-<form action="/option/update_option/{{ option.id }}/{{ q_id }}" method="POST">
+<form action="/option/create_option/{{ question.id }}" method="POST">
     {% csrf_token %}
 
     <div class="mb-3 row">
@@ -34,9 +34,8 @@
     <br/>
 
     <div class="col-sm-8">
-        <button class="col-sm-2 btn btn-danger float-right btn_spacer" type="submit" formaction="/option/delete_option/{{ option.id }}/{{ q_id }}">Delete</button>
         <a class="col-sm-2 btn btn-primary float-right btn_spacer" href="/question/edit_question/{{ question.id }}" role="button">Cancel</a>
-        <button class="col-sm-2 btn btn-primary float-right btn_spacer" type="submit">Update</button>
+        <button class="col-sm-2 btn btn-primary float-right btn_spacer" type="submit">Add</button>
         
     </div>
     

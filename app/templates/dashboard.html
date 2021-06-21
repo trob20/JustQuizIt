@@ -1,25 +1,21 @@
 {% extends 'base.html' %}
-
 {% block title %}Dashboard{% endblock %}
-
 {% block content %}
-
 
 <nav class="navbar">
     <div class="container-fluid">
         <p class="navbar-brand">JustQuizIt</p>
 
-
         <div class="d-flex">
-            <p class="nav-item">Welcome {{ first_name }}!   Take a quiz or review your results!</p>
-            <form action="/quiz/display_quiz" method="GET">
+            <p class="nav-item">Welcome {{ first_name }}!</p>
+            <form action="/quiz/new_quiz" method="GET">
             {% csrf_token %}
                 <button class="btnAsLink linkUnderline nav-item">Create Quiz</button>
             </form>
 
-            <form action="/question/display_question" method="GET">
+            <form action="/question/question_bank" method="GET">
             {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Create Questions</button>
+                <button class="btnAsLink linkUnderline nav-item">Question Bank</button>
             </form>                    
             
             <form action="/logout" method="POST">
@@ -42,6 +38,18 @@
                 <th>Score</th>
             </tr>
         </thead>
+
+        {% for result in quizzes_taken %}
+        <tbody>
+            <tr>
+                <td>{{ result.quiz_id }}</td>
+                <td><a class="linkUnderline" href="/exam/display_result/{{ result.quiz_result_id }}">{{ result.quiz_name }}</a></td>
+                <td>{{ result.date_completed }}</td>
+                <td>{{ result.score }}</td>
+            </tr>
+        </tbody>
+    {% endfor %}
+
 </table>
 
 
@@ -64,19 +72,19 @@
                 <td>{{ quiz.questions.first.source }}</td>
                 <td>
                     <div>
-                        <p class='action_spacer'></p>
-
-                        {{% if quiz.quizzes_taken %}}
-                            <p class='action_spacer'>|</p>
-                            <a class="linkUnderline" href="#">Retake</a>
-                        {% else %}        
-                            <form action="/quiz/take_quiz/{{ quiz.id }}" method="GET">
+                        {% if quiz.quiz_taken.all %}
+                        <form action="/exam/take_quiz/{{ quiz.id }}" method="GET">
+                            {% csrf_token %}
+                            <button class="remove_style linkUnderline btnAsLink">Retake</button>
+                        </form>
+                        {% else %}
+                            <form action="/exam/take_quiz/{{ quiz.id }}" method="GET">
                                 {% csrf_token %}
-                                <button class="remove_style linkUnderline btnAsLink">Take</button>
+                                <button class="remove_style linkUnderline btnAsLink">Take Quiz</button>
                             </form>
                         {% endif %}
 
-                        {{% if quiz.created_by = u_id %}}
+                        {% if quiz.created_by == u_id %}
                             <p class='action_spacer'>|</p>
                             <form action="#" method="GET">
                             {% csrf_token %}

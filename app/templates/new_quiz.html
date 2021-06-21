@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Create Quiz{% endblock %}
+{% block content %}
+{% include "navbar.html" %}
+
+<h1 class="header">Create Quiz</h1>
+
+<form action="/quiz/create_quiz" method="POST">
+    {% csrf_token %}
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Quiz Name</label>
+        <div class="col-sm-3">
+            <input class="form-control" type="text" name="quiz_name" minlength='3' required/>
+        </div>
+        <label class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-3">
+            <button class="btn btn-secondary" type="submit">Create Quiz</button>
+        </div>
+    </div>
+
+    <br/>
+
+    <h3>Question Bank</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th style="width: 5%">ID</th>
+                <th style="width: 10%">Source</th>
+                <th style="width: 10%">Technology</th>
+                <th style="width: 10%">Domain</th>
+                <th style="width: 35%">Question Text</th>
+                <th style="width: 10%">Add to Quiz</th>        
+            </tr>
+        </thead>
+
+        {% for question in questions %}
+            <tbody>
+                <tr>
+                    <td>{{ question.id }}</td>
+                    <td>{{ question.source }}</td>
+                    <td>{{ question.technology }}</td>
+                    <td>{{ question.domain }}</td>
+                    <td>{{ question.question_text}}</td>
+                    <td>
+                        <div class='row'>
+                            <p class='action_spacer'></p>
+                            <input type="checkbox" name="add" value="{{ question.id }}">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+        {% endfor %}
+        
+    </table>
+</form>
+{% endblock %}

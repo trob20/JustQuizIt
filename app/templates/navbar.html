@@ -1,0 +1,18 @@
+<nav class="navbar">
+    <div class="container-fluid">
+        <p class="navbar-brand">JustQuizIt</p>
+
+        <div class="d-flex">
+            <p class="nav-item"><b>You're logged in as:</b> {{ first_name }}</p>
+            <form action="/dashboard" method="GET">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
+            </form>
+
+            <form action="/logout" method="POST">
+            {% csrf_token %}
+                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
+            </form>
+        </div>
+    </div>
+</nav>

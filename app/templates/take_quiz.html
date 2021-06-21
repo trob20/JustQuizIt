@@ -1,48 +1,23 @@
 {% extends 'base.html' %}
-
 {% block title %}Quiz In-Progress{% endblock %}
-
 {% block content %}
-
-
-<nav class="navbar">
-    <div class="container-fluid">
-        <p class="navbar-brand">JustQuizIt</p>
-
-        <div class="d-flex">
-            <p class="nav-item">Logged in: {{ first_name }}!</p>
-            <form action="/dashboard" method="GET">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
-            </form>
-
-            <form action="/logout" method="POST">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
-            </form>
-        </div>
-    </div>
-</nav>
+{% include "navbar.html" %}
 
 <h1 class="header">{{ quiz.name }}</h1>
-<p>{{ quiz.questions.question_text }} </p>
 
-<form action="/quiz/grade_quiz/{{ quiz.id }}" method="POST">
+<form action="/exam/score_quiz/{{ quiz_id }}" method="POST">
 {% csrf_token %}
     {% for question in quiz.questions.all %}
         <p class="spacer_top">{{ forloop.counter }}. {{ question.question_text }} </p>
         <div class="radio_btn">
             {% for option in question.answer_options.all %}
-                <input type="radio" name="answers_selected" value="{{ option.id }}" >
+                <input type="radio" name="{{ question.id }}" value="{{ option.id }}" >
                 <label for="answers_selected">{{ option.answer_option }}</label> <br/>
-                <input type='hidden' name="correct" value="{{option.correct}}" />
-                <input type='hidden' name="question_id" value="{{question.id}}" />
             {% endfor %}
         </div>
     {% endfor %}
-    <button class="btn btn-secondary">Grade</button>
+    <button class="btn btn-secondary" type="submit">Get Score</button>
 </form>
-
 
 
 {% endblock %}

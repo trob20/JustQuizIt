@@ -63,7 +63,7 @@ class Quiz(models.Model):
     objects = QuizManager()
 
     # questions - many-to-many
-    # quiz_taken - many-to-many
+    # quiz_taken - many-to-many 
 
 
 class QuestionManager(models.Manager):
@@ -93,7 +93,7 @@ class Question(models.Model):
     objects = QuestionManager()
 
     # answer_options - one-to-many
-    # question_answered - one-to-one
+    # question_answered - one-to-many
 
 
 class AnswerOption(models.Model):
@@ -103,13 +103,14 @@ class AnswerOption(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     related_question = models.ForeignKey(Question, related_name = "answer_options", on_delete=models.CASCADE)
 
-    # answer_selected - one-to-one
+    # selected_answer - one-to-many
 
 #==========================================================
 # Results
 #==========================================================
 
 class QuizResult(models.Model):
+    score = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     quiz_taken_by = models.ForeignKey(User, related_name = "quiz_results", on_delete=models.CASCADE)
@@ -119,11 +120,13 @@ class QuizResult(models.Model):
 
 
 class AnswerSelected(models.Model):
+    answer = models.IntegerField()
+    correct = models.BooleanField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    answer_selected = models.OneToOneField(AnswerOption, related_name = "answer_selected", on_delete=models.CASCADE)
-    related_question = models.OneToOneField(Question, related_name = "question_answered", on_delete=models.CASCADE)
     related_result = models.ForeignKey(QuizResult, related_name = "quiz_answers", on_delete=models.CASCADE) 
+    related_question = models.ForeignKey(Question, related_name = "question_answered", on_delete=models.CASCADE)
+    related_answer_option = models.ForeignKey(AnswerOption, related_name = "selected_answer", on_delete=models.CASCADE, null=True)
 
 
 #==========================================================

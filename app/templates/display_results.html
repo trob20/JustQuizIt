@@ -1,28 +1,7 @@
 {% extends 'base.html' %}
-
 {% block title %}Quiz Results{% endblock %}
-
 {% block content %}
-
-
-<nav class="navbar">
-    <div class="container-fluid">
-        <p class="navbar-brand">JustQuizIt</p>
-
-        <div class="d-flex">
-            <p class="nav-item">Logged in: {{ first_name }}!</p>
-            <form action="/dashboard" method="GET">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Dashboard</button>
-            </form>
-
-            <form action="/logout" method="POST">
-            {% csrf_token %}
-                <button class="btnAsLink linkUnderline nav-item">Log Out</button>
-            </form>
-        </div>
-    </div>
-</nav>
+{% include "navbar.html" %}
 
 <h1 class="header">{{ quiz.name }} Results</h1>
 

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Quiz Results{% endblock %}
+{% block content %}
+{% include "navbar.html" %}
+
+<h1 class="header">Quiz Results:  {{ quiz_name }}</h1>
+<h3>Your score is: {{ score }} </h3>
+<br/>
+{% for question in questions %}
+
+    <p class="spacer_top"><b>{{ forloop.counter }}. {{ question.question_text }}</b></p>
+
+    <div class="result_spacer">
+        {% for option in question.answer_options %}
+            {% if option.answer_color == "Both" %}
+                <p class="color_correct remove_style">{{ option.answer_option }} <span class="result_span">{{ option.answer_result }}</span></p>
+
+                {% elif option.answer_color == "Correct" %}
+                <p class="color_correct remove_style">{{ option.answer_option }} <span class="result_span">{{ option.answer_result }}</span></p>
+
+                {% elif option.answer_color == "Incorrect" %}
+                <p class="color_incorrect remove_style">{{ option.answer_option }} <span class="result_span">{{ option.answer_result }}</span></p>
+
+                {% else %}
+                <p class="remove_style">{{ option.answer_option }} <span class="result_span">{{ option.answer_result }}</span></p>
+            {% endif %}
+        {% endfor %}
+    </div>
+<hr>
+{% endfor %}
+<a class="btn btn-secondary" href="/exam/take_quiz/{{ quiz_id }}" role="button">Retake Quiz</a>
+
+
+{% endblock %}
