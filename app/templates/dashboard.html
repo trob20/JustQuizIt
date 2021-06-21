@@ -44,7 +44,7 @@
             <tr>
                 <td><a class="linkUnderline" href="/quiz/display_quiz/{{ result.quiz_id }}">{{ result.quiz_id }}</a></td>
                 <td><a class="linkUnderline" href="/exam/display_result/{{ result.quiz_result_id }}">{{ result.quiz_name }}</a></td>
-                <td>{{ result.date_completed }}</td>
+                <td>{{ result.date_completed|date:"F d, Y"  }}</td>
                 <td>{{ result.score }}</td>
             </tr>
         </tbody>

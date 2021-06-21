@@ -36,7 +36,7 @@
             <tbody>
                 <tr>
                     <td>
-                        {% if quiz.created_by.id == u_id %} 
+                        {% if question.question_created_by.id  == u_id %} 
                             <a class="linkUnderline" href="/question/edit_question/{{ question.id }}">{{ question.id }}</a>
                         {% else %}
                             {{ question.id }}
