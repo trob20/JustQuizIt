@@ -289,7 +289,7 @@ def new_quiz(request):
         if sessionTest == 'no u_id': 
             return redirect("/")
 
-        user = User.objects.get(id=u_id)
+        user = User.objects.get(id=request.session["u_id"])
         
         questions = Question.objects.all()  
 
@@ -334,7 +334,7 @@ def edit_quiz(request, id):
         if sessionTest == 'no u_id': 
             return redirect("/")
 
-        u_id = request.session["u_id"]
+        user = User.objects.get(id=request.session["u_id"])
 
         context= {
             "first_name": user.first_name,

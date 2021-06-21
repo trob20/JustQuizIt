@@ -3,18 +3,18 @@
 {% block content %}
 {% include "navbar.html" %}
 
-<h1 class="header">Create Quiz</h1>
+<h1 class="header">Edit Quiz</h1>
 
-<form action="/quiz/create_quiz" method="POST">
+<form action="/quiz/update_quiz/ {{ quiz.id }}" method="POST">
     {% csrf_token %}
     <div class="form-group row">
         <label class="col-sm-2 col-form-label">Quiz Name</label>
         <div class="col-sm-3">
-            <input class="form-control" type="text" name="quiz_name" minlength='3' required/>
+            <input class="form-control" type="text" name="quiz_name" minlength='3' value= "{{ quiz.name }}"  required/>
         </div>
         <label class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">
-            <button class="btn btn-secondary" type="submit">Sumbit Edits</button>
+            <button class="btn btn-primary" type="submit">Sumbit Edits</button>
         </div>
     </div>
 
@@ -26,14 +26,14 @@
             <tr>
                 <th style="width: 5%">ID</th>
                 <th style="width: 10%">Source</th>
-                <th style="width: 10%">Technology</th>
+                <th style="width: 8%">Technology</th>
                 <th style="width: 10%">Domain</th>
                 <th style="width: 35%">Question Text</th>
-                <th style="width: 10%">Remove</th>        
+                <th style="width: 12%">Remove Question</th>        
             </tr>
         </thead>
 
-        {% for question in questions %}
+        {% for question in quiz.questions.all %}
             <tbody>
                 <tr>
                     <td>{{ question.id }}</td>
@@ -42,10 +42,7 @@
                     <td>{{ question.domain }}</td>
                     <td>{{ question.question_text}}</td>
                     <td>
-                        <div class='row'>
-                            <p class='action_spacer'></p>
-                            <input type="checkbox" name="add" value="{{ question.id }}">
-                        </div>
+                        <input class="checkbox_spacer" type="checkbox" name="add" value="{{ question.id }}">
                     </td>
                 </tr>
                 </tbody>

@@ -14,7 +14,7 @@
         </div>
         <label class="col-sm-2 col-form-label"></label>
         <div class="col-sm-3">
-            <button class="btn btn-secondary" type="submit">Create Quiz</button>
+            <button class="btn btn-primary" type="submit">Create Quiz</button>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
                 <th style="width: 10%">Technology</th>
                 <th style="width: 10%">Domain</th>
                 <th style="width: 35%">Question Text</th>
-                <th style="width: 10%">Add to Quiz</th>        
+                <th style="width: 10%">Add Question</th>        
             </tr>
         </thead>
 
@@ -42,10 +42,7 @@
                     <td>{{ question.domain }}</td>
                     <td>{{ question.question_text}}</td>
                     <td>
-                        <div class='row'>
-                            <p class='action_spacer'></p>
-                            <input type="checkbox" name="add" value="{{ question.id }}">
-                        </div>
+                        <input class="checkbox_spacer" type="checkbox" name="add" value="{{ question.id }}">
                     </td>
                 </tr>
                 </tbody>
@@ -53,4 +50,5 @@
         
     </table>
 </form>
+
 {% endblock %}
